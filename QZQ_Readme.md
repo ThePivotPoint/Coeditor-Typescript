@@ -1,0 +1,9 @@
+pandas
+nltk
+transformers
+torch
+dateparser
+jedi==0.18.2
+ipython
+parso
+termcolor

@@ -1,7 +1,7 @@
 import shutil
 import tempfile
 import traceback
-
+import os
 from coeditor import scoped_changes
 from coeditor._utils import pretty_print_dict, scalar_stats
 
@@ -19,7 +19,8 @@ from .common import *
 from .encoding import TEdit
 from .git import CommitInfo, get_commit_history
 from .scoped_changes import ProjectChangeProcessor, TProb, edits_from_commit_history
-
+from pathlib import Path
+from .common import WORK_DIR
 
 @dataclass
 class TokenizedEditDataset(Generic[TEdit]):
@@ -199,11 +200,13 @@ def datasets_from_repo_splits(
 ) -> dict[str, Sequence[TProb]]:
     projects = dict[str, list[Path]]()
     split_is_training = dict[str, list[bool]]()
+    abs_path = os.path.join(WORK_DIR,)
     for split in splits:
-        if not (repos_root / split).exists():
-            warnings.warn(f"Split {split} not found at {repos_root / split}.")
+        abs_path = Path(WORK_DIR, repos_root / split)
+        if not (abs_path).exists():
+            warnings.warn(f"Split {split} not found at {abs_path}.")
             continue
-        ps = [p for p in (repos_root / split).iterdir() if p.is_dir]
+        ps = [p for p in (abs_path).iterdir() if p.is_dir]
         projects[split] = ps
         training = split == "train"
         split_is_training[split] = [training] * len(ps)

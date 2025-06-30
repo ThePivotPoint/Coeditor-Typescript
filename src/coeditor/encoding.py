@@ -7,7 +7,7 @@ from textwrap import indent
 
 from nltk.translate.bleu_score import sentence_bleu
 from transformers.models.roberta.tokenization_roberta import RobertaTokenizer
-from transformers.models.t5.modeling_t5 import T5ForConditionalGeneration
+# from transformers.models.t5.modeling_t5 import T5ForConditionalGeneration
 
 from .change import Added, Change, Deleted, Modified, show_change
 from .common import *
@@ -25,7 +25,7 @@ def _turn_off_tokenizer_warning(tokenizer: TokenizerType):
 Only use this when we want to avoid encoding <add> and <del> as special tokens.
 """
 _BaseTokenizer = cast(
-    TokenizerType, TokenizerType.from_pretrained("Salesforce/codet5-base")
+    TokenizerType, TokenizerType.from_pretrained("/home/ma-user/work/qzq/Coeditor/codet5-base")
 )
 _turn_off_tokenizer_warning(_BaseTokenizer)
 

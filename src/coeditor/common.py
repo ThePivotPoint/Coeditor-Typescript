@@ -65,6 +65,23 @@ RelPath = NewType("RelPath", Path)
 AbsPath = NewType("AbsPath", Path)
 
 
+
+# 获取当前文件的绝对路径
+current_file = os.path.abspath(__file__)
+
+# 获取当前文件所在目录的绝对路径
+current_dir = os.path.dirname(current_file)
+
+# 获取父目录的绝对路径
+parent_dir = os.path.dirname(current_dir)
+
+WORK_DIR = os.path.dirname(parent_dir)
+
+print("当前文件路径:", current_file)
+print("当前目录:", current_dir)
+print("父目录:", parent_dir)
+
+
 def to_rel_path(path: os.PathLike | str) -> RelPath:
     path = Path(path)
     if path.is_absolute():
