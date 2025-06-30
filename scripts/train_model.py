@@ -10,6 +10,20 @@ import multiprocessing
 import os
 import shutil
 import warnings
+import sys
+
+
+# 获取当前文件的绝对路径
+current_file = os.path.abspath(__file__)
+
+# 获取当前文件所在目录的绝对路径
+current_dir = os.path.dirname(current_file)
+
+# 获取父目录的绝对路径
+WORK_DIR = os.path.dirname(current_dir)
+
+src_path = os.path.join(WORK_DIR,"src")
+sys.path.insert(0,src_path)
 
 import numpy as np
 import wandb

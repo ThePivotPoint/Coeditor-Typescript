@@ -287,7 +287,7 @@ class RetrievalEditorModel(T5PreTrainedModel):
             weight_decay=train_args.weight_decay,
             metric_for_best_model="loss_per_tk",
             greater_is_better=False,
-            fp16=True,
+            fp16=False,
             # load_best_model_at_end=True,
             push_to_hub=False,
             report_to=["wandb"],
@@ -862,7 +862,12 @@ class RetrievalEditorModel(T5PreTrainedModel):
             config = AutoConfig.from_pretrained(model_path)
             model = RetrievalEditorModel(config)
         else:
-            model = RetrievalEditorModel.from_pretrained(model_path)
+            try:
+                model = RetrievalEditorModel.from_pretrained(model_path)
+            except:
+                abs_model_path = os.path.join(WORK_DIR, f"codet5-{size}")
+                model = RetrievalEditorModel.from_pretrained(abs_model_path)
+
         assert isinstance(model, RetrievalEditorModel)
         embed_layer = model.resize_token_embeddings(len(_Tokenizer))
         if reuse_embed:
