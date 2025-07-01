@@ -19,15 +19,25 @@ sys.executable()
 然后退出后执行pip install
 
 pandas
+
 nltk
+
 transformers==4.27.4 (如果装不上，如果你只是data部分就不要指定版本)
+
 torch
+
 dateparser
+
 jedi==0.18.2
+
 ipython
+
 parso
+
 termcolor
+
 editdistance==0.6.2
+
 accelerate>=0.26.0
 
 # 数据的同学先修改notebooks/download_data.ipynb
