@@ -1,0 +1,11 @@
+{
+  "total_projects": 1,
+  "processed_projects": 1,
+  "total_problems": 19,
+  "project_stats": {
+    "type-challenges~type-challenges": {
+      "problem_count": 19,
+      "project_path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges"
+    }
+  }
+}

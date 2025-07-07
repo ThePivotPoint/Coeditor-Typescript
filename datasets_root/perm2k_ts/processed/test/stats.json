@@ -1,0 +1,11 @@
+{
+  "total_projects": 1,
+  "processed_projects": 1,
+  "total_problems": 231,
+  "project_stats": {
+    "pmndrs~zustand": {
+      "problem_count": 231,
+      "project_path": "datasets_root/perm2k_ts/repos/test/pmndrs~zustand"
+    }
+  }
+}

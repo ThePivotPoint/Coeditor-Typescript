@@ -1,0 +1,7702 @@
+[
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "#!/usr/bin/env node\n",
+        "\n",
+        "import { Server } from \"@modelcontextprotocol/sdk/server/index.js\";\n",
+        "import { StdioServerTransport } from \"@modelcontextprotocol/sdk/server/stdio.js\";\n",
+        "import {\n",
+        "  CallToolRequestSchema,\n",
+        "  ListToolsRequestSchema,\n",
+        "} from \"@modelcontextprotocol/sdk/types.js\";\n",
+        "import { promises as fs } from 'fs';\n",
+        "import path from 'path';\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            11,
+            20
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "import { fileURLToPath } from 'url';\n",
+        "\n",
+        "// Define memory file path using environment variable with fallback\n",
+        "const defaultMemoryPath = path.join(path.dirname(fileURLToPath(import.meta.url)), 'memory.json');\n",
+        "\n",
+        "// If MEMORY_FILE_PATH is just a filename, put it in the same directory as the script\n",
+        "const MEMORY_FILE_PATH = process.env.MEMORY_FILE_PATH\n",
+        "  ? path.isAbsolute(process.env.MEMORY_FILE_PATH)\n",
+        "    ? process.env.MEMORY_FILE_PATH\n",
+        "    : path.join(path.dirname(fileURLToPath(import.meta.url)), process.env.MEMORY_FILE_PATH)\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        11,
+        20
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            21,
+            30
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "  : defaultMemoryPath;\n",
+        "\n",
+        "// We are storing our memory using entities, relations, and observations in a graph structure\n",
+        "interface Entity {\n",
+        "  name: string;\n",
+        "  entityType: string;\n",
+        "  observations: string[];\n",
+        "}\n",
+        "\n",
+        "interface Relation {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        21,
+        30
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            31,
+            40
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "  from: string;\n",
+        "  to: string;\n",
+        "  relationType: string;\n",
+        "}\n",
+        "\n",
+        "interface KnowledgeGraph {\n",
+        "  entities: Entity[];\n",
+        "  relations: Relation[];\n",
+        "}\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        31,
+        40
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            41,
+            50
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "// The KnowledgeGraphManager class contains all operations to interact with the knowledge graph\n",
+        "class KnowledgeGraphManager {\n",
+        "  private async loadGraph(): Promise<KnowledgeGraph> {\n",
+        "    try {\n",
+        "      const data = await fs.readFile(MEMORY_FILE_PATH, \"utf-8\");\n",
+        "      const lines = data.split(\"\\n\").filter(line => line.trim() !== \"\");\n",
+        "      return lines.reduce((graph: KnowledgeGraph, line) => {\n",
+        "        const item = JSON.parse(line);\n",
+        "        if (item.type === \"entity\") graph.entities.push(item as Entity);\n",
+        "        if (item.type === \"relation\") graph.relations.push(item as Relation);\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        41,
+        50
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            51,
+            60
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "        return graph;\n",
+        "      }, { entities: [], relations: [] });\n",
+        "    } catch (error) {\n",
+        "      if (error instanceof Error && 'code' in error && (error as any).code === \"ENOENT\") {\n",
+        "        return { entities: [], relations: [] };\n",
+        "      }\n",
+        "      throw error;\n",
+        "    }\n",
+        "  }\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        51,
+        60
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            61,
+            70
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "  private async saveGraph(graph: KnowledgeGraph): Promise<void> {\n",
+        "    const lines = [\n",
+        "      ...graph.entities.map(e => JSON.stringify({ type: \"entity\", ...e })),\n",
+        "      ...graph.relations.map(r => JSON.stringify({ type: \"relation\", ...r })),\n",
+        "    ];\n",
+        "    await fs.writeFile(MEMORY_FILE_PATH, lines.join(\"\\n\"));\n",
+        "  }\n",
+        "\n",
+        "  async createEntities(entities: Entity[]): Promise<Entity[]> {\n",
+        "    const graph = await this.loadGraph();\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        61,
+        70
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            71,
+            80
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "    const newEntities = entities.filter(e => !graph.entities.some(existingEntity => existingEntity.name === e.name));\n",
+        "    graph.entities.push(...newEntities);\n",
+        "    await this.saveGraph(graph);\n",
+        "    return newEntities;\n",
+        "  }\n",
+        "\n",
+        "  async createRelations(relations: Relation[]): Promise<Relation[]> {\n",
+        "    const graph = await this.loadGraph();\n",
+        "    const newRelations = relations.filter(r => !graph.relations.some(existingRelation => \n",
+        "      existingRelation.from === r.from && \n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        71,
+        80
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            81,
+            90
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "      existingRelation.to === r.to && \n",
+        "      existingRelation.relationType === r.relationType\n",
+        "    ));\n",
+        "    graph.relations.push(...newRelations);\n",
+        "    await this.saveGraph(graph);\n",
+        "    return newRelations;\n",
+        "  }\n",
+        "\n",
+        "  async addObservations(observations: { entityName: string; contents: string[] }[]): Promise<{ entityName: string; addedObservations: string[] }[]> {\n",
+        "    const graph = await this.loadGraph();\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        81,
+        90
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            91,
+            100
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "    const results = observations.map(o => {\n",
+        "      const entity = graph.entities.find(e => e.name === o.entityName);\n",
+        "      if (!entity) {\n",
+        "        throw new Error(`Entity with name ${o.entityName} not found`);\n",
+        "      }\n",
+        "      const newObservations = o.contents.filter(content => !entity.observations.includes(content));\n",
+        "      entity.observations.push(...newObservations);\n",
+        "      return { entityName: o.entityName, addedObservations: newObservations };\n",
+        "    });\n",
+        "    await this.saveGraph(graph);\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        91,
+        100
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            101,
+            110
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "    return results;\n",
+        "  }\n",
+        "\n",
+        "  async deleteEntities(entityNames: string[]): Promise<void> {\n",
+        "    const graph = await this.loadGraph();\n",
+        "    graph.entities = graph.entities.filter(e => !entityNames.includes(e.name));\n",
+        "    graph.relations = graph.relations.filter(r => !entityNames.includes(r.from) && !entityNames.includes(r.to));\n",
+        "    await this.saveGraph(graph);\n",
+        "  }\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        101,
+        110
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            111,
+            120
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "  async deleteObservations(deletions: { entityName: string; observations: string[] }[]): Promise<void> {\n",
+        "    const graph = await this.loadGraph();\n",
+        "    deletions.forEach(d => {\n",
+        "      const entity = graph.entities.find(e => e.name === d.entityName);\n",
+        "      if (entity) {\n",
+        "        entity.observations = entity.observations.filter(o => !d.observations.includes(o));\n",
+        "      }\n",
+        "    });\n",
+        "    await this.saveGraph(graph);\n",
+        "  }\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        111,
+        120
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            121,
+            130
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "  async deleteRelations(relations: Relation[]): Promise<void> {\n",
+        "    const graph = await this.loadGraph();\n",
+        "    graph.relations = graph.relations.filter(r => !relations.some(delRelation => \n",
+        "      r.from === delRelation.from && \n",
+        "      r.to === delRelation.to && \n",
+        "      r.relationType === delRelation.relationType\n",
+        "    ));\n",
+        "    await this.saveGraph(graph);\n",
+        "  }\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        121,
+        130
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            131,
+            140
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "  async readGraph(): Promise<KnowledgeGraph> {\n",
+        "    return this.loadGraph();\n",
+        "  }\n",
+        "\n",
+        "  // Very basic search function\n",
+        "  async searchNodes(query: string): Promise<KnowledgeGraph> {\n",
+        "    const graph = await this.loadGraph();\n",
+        "    \n",
+        "    // Filter entities\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        131,
+        140
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            141,
+            150
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "    const filteredEntities = graph.entities.filter(e => \n",
+        "      e.name.toLowerCase().includes(query.toLowerCase()) ||\n",
+        "      e.entityType.toLowerCase().includes(query.toLowerCase()) ||\n",
+        "      e.observations.some(o => o.toLowerCase().includes(query.toLowerCase()))\n",
+        "    );\n",
+        "  \n",
+        "    // Create a Set of filtered entity names for quick lookup\n",
+        "    const filteredEntityNames = new Set(filteredEntities.map(e => e.name));\n",
+        "  \n",
+        "    // Filter relations to only include those between filtered entities\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        141,
+        150
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            151,
+            160
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "    const filteredRelations = graph.relations.filter(r => \n",
+        "      filteredEntityNames.has(r.from) && filteredEntityNames.has(r.to)\n",
+        "    );\n",
+        "  \n",
+        "    const filteredGraph: KnowledgeGraph = {\n",
+        "      entities: filteredEntities,\n",
+        "      relations: filteredRelations,\n",
+        "    };\n",
+        "  \n",
+        "    return filteredGraph;\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        151,
+        160
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            161,
+            170
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "  }\n",
+        "\n",
+        "  async openNodes(names: string[]): Promise<KnowledgeGraph> {\n",
+        "    const graph = await this.loadGraph();\n",
+        "    \n",
+        "    // Filter entities\n",
+        "    const filteredEntities = graph.entities.filter(e => names.includes(e.name));\n",
+        "  \n",
+        "    // Create a Set of filtered entity names for quick lookup\n",
+        "    const filteredEntityNames = new Set(filteredEntities.map(e => e.name));\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        161,
+        170
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            171,
+            180
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "  \n",
+        "    // Filter relations to only include those between filtered entities\n",
+        "    const filteredRelations = graph.relations.filter(r => \n",
+        "      filteredEntityNames.has(r.from) && filteredEntityNames.has(r.to)\n",
+        "    );\n",
+        "  \n",
+        "    const filteredGraph: KnowledgeGraph = {\n",
+        "      entities: filteredEntities,\n",
+        "      relations: filteredRelations,\n",
+        "    };\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        171,
+        180
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            181,
+            190
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "  \n",
+        "    return filteredGraph;\n",
+        "  }\n",
+        "}\n",
+        "\n",
+        "const knowledgeGraphManager = new KnowledgeGraphManager();\n",
+        "\n",
+        "\n",
+        "// The server instance and tools exposed to Claude\n",
+        "const server = new Server({\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        181,
+        190
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            191,
+            200
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "  name: \"memory-server\",\n",
+        "  version: \"0.6.3\",\n",
+        "},    {\n",
+        "    capabilities: {\n",
+        "      tools: {},\n",
+        "    },\n",
+        "  },);\n",
+        "\n",
+        "server.setRequestHandler(ListToolsRequestSchema, async () => {\n",
+        "  return {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        191,
+        200
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            201,
+            210
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "    tools: [\n",
+        "      {\n",
+        "        name: \"create_entities\",\n",
+        "        description: \"Create multiple new entities in the knowledge graph\",\n",
+        "        inputSchema: {\n",
+        "          type: \"object\",\n",
+        "          properties: {\n",
+        "            entities: {\n",
+        "              type: \"array\",\n",
+        "              items: {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        201,
+        210
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            211,
+            220
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "                type: \"object\",\n",
+        "                properties: {\n",
+        "                  name: { type: \"string\", description: \"The name of the entity\" },\n",
+        "                  entityType: { type: \"string\", description: \"The type of the entity\" },\n",
+        "                  observations: { \n",
+        "                    type: \"array\", \n",
+        "                    items: { type: \"string\" },\n",
+        "                    description: \"An array of observation contents associated with the entity\"\n",
+        "                  },\n",
+        "                },\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        211,
+        220
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            221,
+            230
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "                required: [\"name\", \"entityType\", \"observations\"],\n",
+        "              },\n",
+        "            },\n",
+        "          },\n",
+        "          required: [\"entities\"],\n",
+        "        },\n",
+        "      },\n",
+        "      {\n",
+        "        name: \"create_relations\",\n",
+        "        description: \"Create multiple new relations between entities in the knowledge graph. Relations should be in active voice\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        221,
+        230
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            231,
+            240
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "        inputSchema: {\n",
+        "          type: \"object\",\n",
+        "          properties: {\n",
+        "            relations: {\n",
+        "              type: \"array\",\n",
+        "              items: {\n",
+        "                type: \"object\",\n",
+        "                properties: {\n",
+        "                  from: { type: \"string\", description: \"The name of the entity where the relation starts\" },\n",
+        "                  to: { type: \"string\", description: \"The name of the entity where the relation ends\" },\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        231,
+        240
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            241,
+            250
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "                  relationType: { type: \"string\", description: \"The type of the relation\" },\n",
+        "                },\n",
+        "                required: [\"from\", \"to\", \"relationType\"],\n",
+        "              },\n",
+        "            },\n",
+        "          },\n",
+        "          required: [\"relations\"],\n",
+        "        },\n",
+        "      },\n",
+        "      {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        241,
+        250
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            251,
+            260
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "        name: \"add_observations\",\n",
+        "        description: \"Add new observations to existing entities in the knowledge graph\",\n",
+        "        inputSchema: {\n",
+        "          type: \"object\",\n",
+        "          properties: {\n",
+        "            observations: {\n",
+        "              type: \"array\",\n",
+        "              items: {\n",
+        "                type: \"object\",\n",
+        "                properties: {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        251,
+        260
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            261,
+            270
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "                  entityName: { type: \"string\", description: \"The name of the entity to add the observations to\" },\n",
+        "                  contents: { \n",
+        "                    type: \"array\", \n",
+        "                    items: { type: \"string\" },\n",
+        "                    description: \"An array of observation contents to add\"\n",
+        "                  },\n",
+        "                },\n",
+        "                required: [\"entityName\", \"contents\"],\n",
+        "              },\n",
+        "            },\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        261,
+        270
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            271,
+            280
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "          },\n",
+        "          required: [\"observations\"],\n",
+        "        },\n",
+        "      },\n",
+        "      {\n",
+        "        name: \"delete_entities\",\n",
+        "        description: \"Delete multiple entities and their associated relations from the knowledge graph\",\n",
+        "        inputSchema: {\n",
+        "          type: \"object\",\n",
+        "          properties: {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        271,
+        280
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            281,
+            290
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "            entityNames: { \n",
+        "              type: \"array\", \n",
+        "              items: { type: \"string\" },\n",
+        "              description: \"An array of entity names to delete\" \n",
+        "            },\n",
+        "          },\n",
+        "          required: [\"entityNames\"],\n",
+        "        },\n",
+        "      },\n",
+        "      {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        281,
+        290
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            291,
+            300
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "        name: \"delete_observations\",\n",
+        "        description: \"Delete specific observations from entities in the knowledge graph\",\n",
+        "        inputSchema: {\n",
+        "          type: \"object\",\n",
+        "          properties: {\n",
+        "            deletions: {\n",
+        "              type: \"array\",\n",
+        "              items: {\n",
+        "                type: \"object\",\n",
+        "                properties: {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        291,
+        300
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            301,
+            310
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "                  entityName: { type: \"string\", description: \"The name of the entity containing the observations\" },\n",
+        "                  observations: { \n",
+        "                    type: \"array\", \n",
+        "                    items: { type: \"string\" },\n",
+        "                    description: \"An array of observations to delete\"\n",
+        "                  },\n",
+        "                },\n",
+        "                required: [\"entityName\", \"observations\"],\n",
+        "              },\n",
+        "            },\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        301,
+        310
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            311,
+            320
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "          },\n",
+        "          required: [\"deletions\"],\n",
+        "        },\n",
+        "      },\n",
+        "      {\n",
+        "        name: \"delete_relations\",\n",
+        "        description: \"Delete multiple relations from the knowledge graph\",\n",
+        "        inputSchema: {\n",
+        "          type: \"object\",\n",
+        "          properties: {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        311,
+        320
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            321,
+            330
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "            relations: { \n",
+        "              type: \"array\", \n",
+        "              items: {\n",
+        "                type: \"object\",\n",
+        "                properties: {\n",
+        "                  from: { type: \"string\", description: \"The name of the entity where the relation starts\" },\n",
+        "                  to: { type: \"string\", description: \"The name of the entity where the relation ends\" },\n",
+        "                  relationType: { type: \"string\", description: \"The type of the relation\" },\n",
+        "                },\n",
+        "                required: [\"from\", \"to\", \"relationType\"],\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        321,
+        330
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            331,
+            340
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "              },\n",
+        "              description: \"An array of relations to delete\" \n",
+        "            },\n",
+        "          },\n",
+        "          required: [\"relations\"],\n",
+        "        },\n",
+        "      },\n",
+        "      {\n",
+        "        name: \"read_graph\",\n",
+        "        description: \"Read the entire knowledge graph\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        331,
+        340
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            341,
+            350
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "        inputSchema: {\n",
+        "          type: \"object\",\n",
+        "          properties: {},\n",
+        "        },\n",
+        "      },\n",
+        "      {\n",
+        "        name: \"search_nodes\",\n",
+        "        description: \"Search for nodes in the knowledge graph based on a query\",\n",
+        "        inputSchema: {\n",
+        "          type: \"object\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        341,
+        350
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            351,
+            360
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "          properties: {\n",
+        "            query: { type: \"string\", description: \"The search query to match against entity names, types, and observation content\" },\n",
+        "          },\n",
+        "          required: [\"query\"],\n",
+        "        },\n",
+        "      },\n",
+        "      {\n",
+        "        name: \"open_nodes\",\n",
+        "        description: \"Open specific nodes in the knowledge graph by their names\",\n",
+        "        inputSchema: {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        351,
+        360
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            361,
+            370
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "          type: \"object\",\n",
+        "          properties: {\n",
+        "            names: {\n",
+        "              type: \"array\",\n",
+        "              items: { type: \"string\" },\n",
+        "              description: \"An array of entity names to retrieve\",\n",
+        "            },\n",
+        "          },\n",
+        "          required: [\"names\"],\n",
+        "        },\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        361,
+        370
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            371,
+            380
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "      },\n",
+        "    ],\n",
+        "  };\n",
+        "});\n",
+        "\n",
+        "server.setRequestHandler(CallToolRequestSchema, async (request) => {\n",
+        "  const { name, arguments: args } = request.params;\n",
+        "\n",
+        "  if (!args) {\n",
+        "    throw new Error(`No arguments provided for tool: ${name}`);\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        371,
+        380
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            381,
+            390
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "  }\n",
+        "\n",
+        "  switch (name) {\n",
+        "    case \"create_entities\":\n",
+        "      return { content: [{ type: \"text\", text: JSON.stringify(await knowledgeGraphManager.createEntities(args.entities as Entity[]), null, 2) }] };\n",
+        "    case \"create_relations\":\n",
+        "      return { content: [{ type: \"text\", text: JSON.stringify(await knowledgeGraphManager.createRelations(args.relations as Relation[]), null, 2) }] };\n",
+        "    case \"add_observations\":\n",
+        "      return { content: [{ type: \"text\", text: JSON.stringify(await knowledgeGraphManager.addObservations(args.observations as { entityName: string; contents: string[] }[]), null, 2) }] };\n",
+        "    case \"delete_entities\":\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        381,
+        390
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            391,
+            400
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "      await knowledgeGraphManager.deleteEntities(args.entityNames as string[]);\n",
+        "      return { content: [{ type: \"text\", text: \"Entities deleted successfully\" }] };\n",
+        "    case \"delete_observations\":\n",
+        "      await knowledgeGraphManager.deleteObservations(args.deletions as { entityName: string; observations: string[] }[]);\n",
+        "      return { content: [{ type: \"text\", text: \"Observations deleted successfully\" }] };\n",
+        "    case \"delete_relations\":\n",
+        "      await knowledgeGraphManager.deleteRelations(args.relations as Relation[]);\n",
+        "      return { content: [{ type: \"text\", text: \"Relations deleted successfully\" }] };\n",
+        "    case \"read_graph\":\n",
+        "      return { content: [{ type: \"text\", text: JSON.stringify(await knowledgeGraphManager.readGraph(), null, 2) }] };\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        391,
+        400
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            401,
+            410
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/memory/index.ts"
+        }
+      ],
+      "original": [
+        "    case \"search_nodes\":\n",
+        "      return { content: [{ type: \"text\", text: JSON.stringify(await knowledgeGraphManager.searchNodes(args.query as string), null, 2) }] };\n",
+        "    case \"open_nodes\":\n",
+        "      return { content: [{ type: \"text\", text: JSON.stringify(await knowledgeGraphManager.openNodes(args.names as string[]), null, 2) }] };\n",
+        "    default:\n",
+        "      throw new Error(`Unknown tool: ${name}`);\n",
+        "  }\n",
+        "});\n",
+        "\n",
+        "async function main() {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        401,
+        410
+      ],
+      "module": "src/memory/index.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/stdio.ts"
+        }
+      ],
+      "original": [
+        "#!/usr/bin/env node\n",
+        "\n",
+        "import { StdioServerTransport } from \"@modelcontextprotocol/sdk/server/stdio.js\";\n",
+        "import { createServer } from \"./everything.js\";\n",
+        "\n",
+        "console.error('Starting default (STDIO) server...');\n",
+        "\n",
+        "async function main() {\n",
+        "  const transport = new StdioServerTransport();\n",
+        "  const {server, cleanup} = createServer();\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "src/everything/stdio.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            11,
+            20
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/stdio.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "  await server.connect(transport);\n",
+        "\n",
+        "  // Cleanup on exit\n",
+        "  process.on(\"SIGINT\", async () => {\n",
+        "    await cleanup();\n",
+        "    await server.close();\n",
+        "    process.exit(0);\n",
+        "  });\n",
+        "}\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        11,
+        20
+      ],
+      "module": "src/everything/stdio.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/sse.ts"
+        }
+      ],
+      "original": [
+        "import { SSEServerTransport } from \"@modelcontextprotocol/sdk/server/sse.js\";\n",
+        "import express from \"express\";\n",
+        "import { createServer } from \"./everything.js\";\n",
+        "\n",
+        "console.error('Starting SSE server...');\n",
+        "\n",
+        "const app = express();\n",
+        "\n",
+        "const transports: Map<string, SSEServerTransport> = new Map<string, SSEServerTransport>();\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "src/everything/sse.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            11,
+            20
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/sse.ts"
+        }
+      ],
+      "original": [
+        "app.get(\"/sse\", async (req, res) => {\n",
+        "  let transport: SSEServerTransport;\n",
+        "  const { server, cleanup } = createServer();\n",
+        "\n",
+        "  if (req?.query?.sessionId) {\n",
+        "    const sessionId = (req?.query?.sessionId as string);\n",
+        "    transport = transports.get(sessionId) as SSEServerTransport;\n",
+        "    console.error(\"Client Reconnecting? This shouldn't happen; when client has a sessionId, GET /sse should not be called again.\", transport.sessionId);\n",
+        "  } else {\n",
+        "    // Create and store transport for new session\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        11,
+        20
+      ],
+      "module": "src/everything/sse.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            21,
+            30
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/sse.ts"
+        }
+      ],
+      "original": [
+        "    transport = new SSEServerTransport(\"/message\", res);\n",
+        "    transports.set(transport.sessionId, transport);\n",
+        "\n",
+        "    // Connect server to transport\n",
+        "    await server.connect(transport);\n",
+        "    console.error(\"Client Connected: \", transport.sessionId);\n",
+        "\n",
+        "    // Handle close of connection\n",
+        "    server.onclose = async () => {\n",
+        "      console.error(\"Client Disconnected: \", transport.sessionId);\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        21,
+        30
+      ],
+      "module": "src/everything/sse.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            31,
+            40
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/sse.ts"
+        }
+      ],
+      "original": [
+        "      transports.delete(transport.sessionId);\n",
+        "      await cleanup();\n",
+        "    };\n",
+        "\n",
+        "  }\n",
+        "\n",
+        "});\n",
+        "\n",
+        "app.post(\"/message\", async (req, res) => {\n",
+        "  const sessionId = (req?.query?.sessionId as string);\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        31,
+        40
+      ],
+      "module": "src/everything/sse.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            41,
+            50
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/sse.ts"
+        }
+      ],
+      "original": [
+        "  const transport = transports.get(sessionId);\n",
+        "  if (transport) {\n",
+        "    console.error(\"Client Message from\", sessionId);\n",
+        "    await transport.handlePostMessage(req, res);\n",
+        "  } else {\n",
+        "    console.error(`No transport found for sessionId ${sessionId}`)\n",
+        "  }\n",
+        "});\n",
+        "\n",
+        "const PORT = process.env.PORT || 3001;\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        41,
+        50
+      ],
+      "module": "src/everything/sse.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "import { Server } from \"@modelcontextprotocol/sdk/server/index.js\";\n",
+        "import {\n",
+        "  CallToolRequestSchema,\n",
+        "  CompleteRequestSchema,\n",
+        "  CreateMessageRequest,\n",
+        "  CreateMessageResultSchema,\n",
+        "  GetPromptRequestSchema,\n",
+        "  ListPromptsRequestSchema,\n",
+        "  ListResourcesRequestSchema,\n",
+        "  ListResourceTemplatesRequestSchema,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            11,
+            20
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "  ListToolsRequestSchema,\n",
+        "  LoggingLevel,\n",
+        "  ReadResourceRequestSchema,\n",
+        "  Resource,\n",
+        "  SetLevelRequestSchema,\n",
+        "  SubscribeRequestSchema,\n",
+        "  Tool,\n",
+        "  ToolSchema,\n",
+        "  UnsubscribeRequestSchema,\n",
+        "} from \"@modelcontextprotocol/sdk/types.js\";\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        11,
+        20
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            21,
+            30
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "import { z } from \"zod\";\n",
+        "import { zodToJsonSchema } from \"zod-to-json-schema\";\n",
+        "import { readFileSync } from \"fs\";\n",
+        "import { fileURLToPath } from \"url\";\n",
+        "import { dirname, join } from \"path\";\n",
+        "\n",
+        "const __filename = fileURLToPath(import.meta.url);\n",
+        "const __dirname = dirname(__filename);\n",
+        "const instructions = readFileSync(join(__dirname, \"instructions.md\"), \"utf-8\");\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        21,
+        30
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            31,
+            40
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "const ToolInputSchema = ToolSchema.shape.inputSchema;\n",
+        "type ToolInput = z.infer<typeof ToolInputSchema>;\n",
+        "\n",
+        "/* Input schemas for tools implemented in this server */\n",
+        "const EchoSchema = z.object({\n",
+        "  message: z.string().describe(\"Message to echo\"),\n",
+        "});\n",
+        "\n",
+        "const AddSchema = z.object({\n",
+        "  a: z.number().describe(\"First number\"),\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        31,
+        40
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            41,
+            50
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "  b: z.number().describe(\"Second number\"),\n",
+        "});\n",
+        "\n",
+        "const LongRunningOperationSchema = z.object({\n",
+        "  duration: z\n",
+        "    .number()\n",
+        "    .default(10)\n",
+        "    .describe(\"Duration of the operation in seconds\"),\n",
+        "  steps: z.number().default(5).describe(\"Number of steps in the operation\"),\n",
+        "});\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        41,
+        50
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            51,
+            60
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "const PrintEnvSchema = z.object({});\n",
+        "\n",
+        "const SampleLLMSchema = z.object({\n",
+        "  prompt: z.string().describe(\"The prompt to send to the LLM\"),\n",
+        "  maxTokens: z\n",
+        "    .number()\n",
+        "    .default(100)\n",
+        "    .describe(\"Maximum number of tokens to generate\"),\n",
+        "});\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        51,
+        60
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            61,
+            70
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "// Example completion values\n",
+        "const EXAMPLE_COMPLETIONS = {\n",
+        "  style: [\"casual\", \"formal\", \"technical\", \"friendly\"],\n",
+        "  temperature: [\"0\", \"0.5\", \"0.7\", \"1.0\"],\n",
+        "  resourceId: [\"1\", \"2\", \"3\", \"4\", \"5\"],\n",
+        "};\n",
+        "\n",
+        "const GetTinyImageSchema = z.object({});\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        61,
+        70
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            71,
+            80
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "const AnnotatedMessageSchema = z.object({\n",
+        "  messageType: z\n",
+        "    .enum([\"error\", \"success\", \"debug\"])\n",
+        "    .describe(\"Type of message to demonstrate different annotation patterns\"),\n",
+        "  includeImage: z\n",
+        "    .boolean()\n",
+        "    .default(false)\n",
+        "    .describe(\"Whether to include an example image\"),\n",
+        "});\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        71,
+        80
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            81,
+            90
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "const GetResourceReferenceSchema = z.object({\n",
+        "  resourceId: z\n",
+        "    .number()\n",
+        "    .min(1)\n",
+        "    .max(100)\n",
+        "    .describe(\"ID of the resource to reference (1-100)\"),\n",
+        "});\n",
+        "\n",
+        "const GetResourceLinksSchema = z.object({\n",
+        "  count: z\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        81,
+        90
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            91,
+            100
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    .number()\n",
+        "    .min(1)\n",
+        "    .max(10)\n",
+        "    .default(3)\n",
+        "    .describe(\"Number of resource links to return (1-10)\"),\n",
+        "});\n",
+        "\n",
+        "enum ToolName {\n",
+        "  ECHO = \"echo\",\n",
+        "  ADD = \"add\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        91,
+        100
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            101,
+            110
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "  LONG_RUNNING_OPERATION = \"longRunningOperation\",\n",
+        "  PRINT_ENV = \"printEnv\",\n",
+        "  SAMPLE_LLM = \"sampleLLM\",\n",
+        "  GET_TINY_IMAGE = \"getTinyImage\",\n",
+        "  ANNOTATED_MESSAGE = \"annotatedMessage\",\n",
+        "  GET_RESOURCE_REFERENCE = \"getResourceReference\",\n",
+        "  GET_RESOURCE_LINKS = \"getResourceLinks\",\n",
+        "}\n",
+        "\n",
+        "enum PromptName {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        101,
+        110
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            111,
+            120
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "  SIMPLE = \"simple_prompt\",\n",
+        "  COMPLEX = \"complex_prompt\",\n",
+        "  RESOURCE = \"resource_prompt\",\n",
+        "}\n",
+        "\n",
+        "export const createServer = () => {\n",
+        "  const server = new Server(\n",
+        "    {\n",
+        "      name: \"example-servers/everything\",\n",
+        "      version: \"1.0.0\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        111,
+        120
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            121,
+            130
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    },\n",
+        "    {\n",
+        "      capabilities: {\n",
+        "        prompts: {},\n",
+        "        resources: { subscribe: true },\n",
+        "        tools: {},\n",
+        "        logging: {},\n",
+        "        completions: {},\n",
+        "      },\n",
+        "      instructions\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        121,
+        130
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            131,
+            140
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    }\n",
+        "  );\n",
+        "\n",
+        "  let subscriptions: Set<string> = new Set();\n",
+        "  let subsUpdateInterval: NodeJS.Timeout | undefined;\n",
+        "  let stdErrUpdateInterval: NodeJS.Timeout | undefined;\n",
+        "\n",
+        "  // Set up update interval for subscribed resources\n",
+        "  subsUpdateInterval = setInterval(() => {\n",
+        "    for (const uri of subscriptions) {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        131,
+        140
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            141,
+            150
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      server.notification({\n",
+        "        method: \"notifications/resources/updated\",\n",
+        "        params: { uri },\n",
+        "      });\n",
+        "    }\n",
+        "  }, 10000);\n",
+        "\n",
+        "  let logLevel: LoggingLevel = \"debug\";\n",
+        "  let logsUpdateInterval: NodeJS.Timeout | undefined;\n",
+        "  const messages = [\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        141,
+        150
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            151,
+            160
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    { level: \"debug\", data: \"Debug-level message\" },\n",
+        "    { level: \"info\", data: \"Info-level message\" },\n",
+        "    { level: \"notice\", data: \"Notice-level message\" },\n",
+        "    { level: \"warning\", data: \"Warning-level message\" },\n",
+        "    { level: \"error\", data: \"Error-level message\" },\n",
+        "    { level: \"critical\", data: \"Critical-level message\" },\n",
+        "    { level: \"alert\", data: \"Alert level-message\" },\n",
+        "    { level: \"emergency\", data: \"Emergency-level message\" },\n",
+        "  ];\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        151,
+        160
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            161,
+            170
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "  const isMessageIgnored = (level: LoggingLevel): boolean => {\n",
+        "    const currentLevel = messages.findIndex((msg) => logLevel === msg.level);\n",
+        "    const messageLevel = messages.findIndex((msg) => level === msg.level);\n",
+        "    return messageLevel < currentLevel;\n",
+        "  };\n",
+        "\n",
+        "  // Set up update interval for random log messages\n",
+        "  logsUpdateInterval = setInterval(() => {\n",
+        "    let message = {\n",
+        "      method: \"notifications/message\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        161,
+        170
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            171,
+            180
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      params: messages[Math.floor(Math.random() * messages.length)],\n",
+        "    };\n",
+        "    if (!isMessageIgnored(message.params.level as LoggingLevel))\n",
+        "      server.notification(message);\n",
+        "  }, 20000);\n",
+        "\n",
+        "\n",
+        "  // Set up update interval for stderr messages\n",
+        "  stdErrUpdateInterval = setInterval(() => {\n",
+        "    const shortTimestamp = new Date().toLocaleTimeString([], {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        171,
+        180
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            181,
+            190
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      hour: \"2-digit\",\n",
+        "      minute: \"2-digit\",\n",
+        "      second: \"2-digit\"\n",
+        "    });\n",
+        "    server.notification({\n",
+        "      method: \"notifications/stderr\",\n",
+        "      params: { content: `${shortTimestamp}: A stderr message` },\n",
+        "    });\n",
+        "  }, 30000);\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        181,
+        190
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            191,
+            200
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "  // Helper method to request sampling from client\n",
+        "  const requestSampling = async (\n",
+        "    context: string,\n",
+        "    uri: string,\n",
+        "    maxTokens: number = 100\n",
+        "  ) => {\n",
+        "    const request: CreateMessageRequest = {\n",
+        "      method: \"sampling/createMessage\",\n",
+        "      params: {\n",
+        "        messages: [\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        191,
+        200
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            201,
+            210
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "          {\n",
+        "            role: \"user\",\n",
+        "            content: {\n",
+        "              type: \"text\",\n",
+        "              text: `Resource ${uri} context: ${context}`,\n",
+        "            },\n",
+        "          },\n",
+        "        ],\n",
+        "        systemPrompt: \"You are a helpful test server.\",\n",
+        "        maxTokens,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        201,
+        210
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            211,
+            220
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        temperature: 0.7,\n",
+        "        includeContext: \"thisServer\",\n",
+        "      },\n",
+        "    };\n",
+        "\n",
+        "    return await server.request(request, CreateMessageResultSchema);\n",
+        "  };\n",
+        "\n",
+        "  const ALL_RESOURCES: Resource[] = Array.from({ length: 100 }, (_, i) => {\n",
+        "    const uri = `test://static/resource/${i + 1}`;\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        211,
+        220
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            221,
+            230
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    if (i % 2 === 0) {\n",
+        "      return {\n",
+        "        uri,\n",
+        "        name: `Resource ${i + 1}`,\n",
+        "        mimeType: \"text/plain\",\n",
+        "        text: `Resource ${i + 1}: This is a plaintext resource`,\n",
+        "      };\n",
+        "    } else {\n",
+        "      const buffer = Buffer.from(`Resource ${i + 1}: This is a base64 blob`);\n",
+        "      return {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        221,
+        230
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            231,
+            240
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        uri,\n",
+        "        name: `Resource ${i + 1}`,\n",
+        "        mimeType: \"application/octet-stream\",\n",
+        "        blob: buffer.toString(\"base64\"),\n",
+        "      };\n",
+        "    }\n",
+        "  });\n",
+        "\n",
+        "  const PAGE_SIZE = 10;\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        231,
+        240
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            241,
+            250
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "  server.setRequestHandler(ListResourcesRequestSchema, async (request) => {\n",
+        "    const cursor = request.params?.cursor;\n",
+        "    let startIndex = 0;\n",
+        "\n",
+        "    if (cursor) {\n",
+        "      const decodedCursor = parseInt(atob(cursor), 10);\n",
+        "      if (!isNaN(decodedCursor)) {\n",
+        "        startIndex = decodedCursor;\n",
+        "      }\n",
+        "    }\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        241,
+        250
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            251,
+            260
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "    const endIndex = Math.min(startIndex + PAGE_SIZE, ALL_RESOURCES.length);\n",
+        "    const resources = ALL_RESOURCES.slice(startIndex, endIndex);\n",
+        "\n",
+        "    let nextCursor: string | undefined;\n",
+        "    if (endIndex < ALL_RESOURCES.length) {\n",
+        "      nextCursor = btoa(endIndex.toString());\n",
+        "    }\n",
+        "\n",
+        "    return {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        251,
+        260
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            261,
+            270
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      resources,\n",
+        "      nextCursor,\n",
+        "    };\n",
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => {\n",
+        "    return {\n",
+        "      resourceTemplates: [\n",
+        "        {\n",
+        "          uriTemplate: \"test://static/resource/{id}\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        261,
+        270
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            271,
+            280
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "          name: \"Static Resource\",\n",
+        "          description: \"A static resource with a numeric ID\",\n",
+        "        },\n",
+        "      ],\n",
+        "    };\n",
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(ReadResourceRequestSchema, async (request) => {\n",
+        "    const uri = request.params.uri;\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        271,
+        280
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            281,
+            290
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    if (uri.startsWith(\"test://static/resource/\")) {\n",
+        "      const index = parseInt(uri.split(\"/\").pop() ?? \"\", 10) - 1;\n",
+        "      if (index >= 0 && index < ALL_RESOURCES.length) {\n",
+        "        const resource = ALL_RESOURCES[index];\n",
+        "        return {\n",
+        "          contents: [resource],\n",
+        "        };\n",
+        "      }\n",
+        "    }\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        281,
+        290
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            291,
+            300
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    throw new Error(`Unknown resource: ${uri}`);\n",
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(SubscribeRequestSchema, async (request) => {\n",
+        "    const { uri } = request.params;\n",
+        "    subscriptions.add(uri);\n",
+        "\n",
+        "    // Request sampling from client when someone subscribes\n",
+        "    await requestSampling(\"A new subscription was started\", uri);\n",
+        "    return {};\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        291,
+        300
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            301,
+            310
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(UnsubscribeRequestSchema, async (request) => {\n",
+        "    subscriptions.delete(request.params.uri);\n",
+        "    return {};\n",
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(ListPromptsRequestSchema, async () => {\n",
+        "    return {\n",
+        "      prompts: [\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        301,
+        310
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            311,
+            320
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        {\n",
+        "          name: PromptName.SIMPLE,\n",
+        "          description: \"A prompt without arguments\",\n",
+        "        },\n",
+        "        {\n",
+        "          name: PromptName.COMPLEX,\n",
+        "          description: \"A prompt with arguments\",\n",
+        "          arguments: [\n",
+        "            {\n",
+        "              name: \"temperature\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        311,
+        320
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            321,
+            330
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "              description: \"Temperature setting\",\n",
+        "              required: true,\n",
+        "            },\n",
+        "            {\n",
+        "              name: \"style\",\n",
+        "              description: \"Output style\",\n",
+        "              required: false,\n",
+        "            },\n",
+        "          ],\n",
+        "        },\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        321,
+        330
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            331,
+            340
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        {\n",
+        "          name: PromptName.RESOURCE,\n",
+        "          description: \"A prompt that includes an embedded resource reference\",\n",
+        "          arguments: [\n",
+        "            {\n",
+        "              name: \"resourceId\",\n",
+        "              description: \"Resource ID to include (1-100)\",\n",
+        "              required: true,\n",
+        "            },\n",
+        "          ],\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        331,
+        340
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            341,
+            350
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        },\n",
+        "      ],\n",
+        "    };\n",
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(GetPromptRequestSchema, async (request) => {\n",
+        "    const { name, arguments: args } = request.params;\n",
+        "\n",
+        "    if (name === PromptName.SIMPLE) {\n",
+        "      return {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        341,
+        350
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            351,
+            360
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        messages: [\n",
+        "          {\n",
+        "            role: \"user\",\n",
+        "            content: {\n",
+        "              type: \"text\",\n",
+        "              text: \"This is a simple prompt without arguments.\",\n",
+        "            },\n",
+        "          },\n",
+        "        ],\n",
+        "      };\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        351,
+        360
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            361,
+            370
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    }\n",
+        "\n",
+        "    if (name === PromptName.COMPLEX) {\n",
+        "      return {\n",
+        "        messages: [\n",
+        "          {\n",
+        "            role: \"user\",\n",
+        "            content: {\n",
+        "              type: \"text\",\n",
+        "              text: `This is a complex prompt with arguments: temperature=${args?.temperature}, style=${args?.style}`,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        361,
+        370
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            371,
+            380
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "            },\n",
+        "          },\n",
+        "          {\n",
+        "            role: \"assistant\",\n",
+        "            content: {\n",
+        "              type: \"text\",\n",
+        "              text: \"I understand. You've provided a complex prompt with temperature and style arguments. How would you like me to proceed?\",\n",
+        "            },\n",
+        "          },\n",
+        "          {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        371,
+        380
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            381,
+            390
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "            role: \"user\",\n",
+        "            content: {\n",
+        "              type: \"image\",\n",
+        "              data: MCP_TINY_IMAGE,\n",
+        "              mimeType: \"image/png\",\n",
+        "            },\n",
+        "          },\n",
+        "        ],\n",
+        "      };\n",
+        "    }\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        381,
+        390
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            391,
+            400
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "    if (name === PromptName.RESOURCE) {\n",
+        "      const resourceId = parseInt(args?.resourceId as string, 10);\n",
+        "      if (isNaN(resourceId) || resourceId < 1 || resourceId > 100) {\n",
+        "        throw new Error(\n",
+        "          `Invalid resourceId: ${args?.resourceId}. Must be a number between 1 and 100.`\n",
+        "        );\n",
+        "      }\n",
+        "\n",
+        "      const resourceIndex = resourceId - 1;\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        391,
+        400
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            401,
+            410
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      const resource = ALL_RESOURCES[resourceIndex];\n",
+        "\n",
+        "      return {\n",
+        "        messages: [\n",
+        "          {\n",
+        "            role: \"user\",\n",
+        "            content: {\n",
+        "              type: \"text\",\n",
+        "              text: `This prompt includes Resource ${resourceId}. Please analyze the following resource:`,\n",
+        "            },\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        401,
+        410
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            411,
+            420
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "          },\n",
+        "          {\n",
+        "            role: \"user\",\n",
+        "            content: {\n",
+        "              type: \"resource\",\n",
+        "              resource: resource,\n",
+        "            },\n",
+        "          },\n",
+        "        ],\n",
+        "      };\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        411,
+        420
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            421,
+            430
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    }\n",
+        "\n",
+        "    throw new Error(`Unknown prompt: ${name}`);\n",
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(ListToolsRequestSchema, async () => {\n",
+        "    const tools: Tool[] = [\n",
+        "      {\n",
+        "        name: ToolName.ECHO,\n",
+        "        description: \"Echoes back the input\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        421,
+        430
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            431,
+            440
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        inputSchema: zodToJsonSchema(EchoSchema) as ToolInput,\n",
+        "      },\n",
+        "      {\n",
+        "        name: ToolName.ADD,\n",
+        "        description: \"Adds two numbers\",\n",
+        "        inputSchema: zodToJsonSchema(AddSchema) as ToolInput,\n",
+        "      },\n",
+        "      {\n",
+        "        name: ToolName.PRINT_ENV,\n",
+        "        description:\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        431,
+        440
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            441,
+            450
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "          \"Prints all environment variables, helpful for debugging MCP server configuration\",\n",
+        "        inputSchema: zodToJsonSchema(PrintEnvSchema) as ToolInput,\n",
+        "      },\n",
+        "      {\n",
+        "        name: ToolName.LONG_RUNNING_OPERATION,\n",
+        "        description:\n",
+        "          \"Demonstrates a long running operation with progress updates\",\n",
+        "        inputSchema: zodToJsonSchema(LongRunningOperationSchema) as ToolInput,\n",
+        "      },\n",
+        "      {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        441,
+        450
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            451,
+            460
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        name: ToolName.SAMPLE_LLM,\n",
+        "        description: \"Samples from an LLM using MCP's sampling feature\",\n",
+        "        inputSchema: zodToJsonSchema(SampleLLMSchema) as ToolInput,\n",
+        "      },\n",
+        "      {\n",
+        "        name: ToolName.GET_TINY_IMAGE,\n",
+        "        description: \"Returns the MCP_TINY_IMAGE\",\n",
+        "        inputSchema: zodToJsonSchema(GetTinyImageSchema) as ToolInput,\n",
+        "      },\n",
+        "      {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        451,
+        460
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            461,
+            470
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        name: ToolName.ANNOTATED_MESSAGE,\n",
+        "        description:\n",
+        "          \"Demonstrates how annotations can be used to provide metadata about content\",\n",
+        "        inputSchema: zodToJsonSchema(AnnotatedMessageSchema) as ToolInput,\n",
+        "      },\n",
+        "      {\n",
+        "        name: ToolName.GET_RESOURCE_REFERENCE,\n",
+        "        description:\n",
+        "          \"Returns a resource reference that can be used by MCP clients\",\n",
+        "        inputSchema: zodToJsonSchema(GetResourceReferenceSchema) as ToolInput,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        461,
+        470
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            471,
+            480
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      },\n",
+        "      {\n",
+        "        name: ToolName.GET_RESOURCE_LINKS,\n",
+        "        description:\n",
+        "          \"Returns multiple resource links that reference different types of resources\",\n",
+        "        inputSchema: zodToJsonSchema(GetResourceLinksSchema) as ToolInput,\n",
+        "      },\n",
+        "    ];\n",
+        "\n",
+        "    return { tools };\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        471,
+        480
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            481,
+            490
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(CallToolRequestSchema, async (request) => {\n",
+        "    const { name, arguments: args } = request.params;\n",
+        "\n",
+        "    if (name === ToolName.ECHO) {\n",
+        "      const validatedArgs = EchoSchema.parse(args);\n",
+        "      return {\n",
+        "        content: [{ type: \"text\", text: `Echo: ${validatedArgs.message}` }],\n",
+        "      };\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        481,
+        490
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            491,
+            500
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    }\n",
+        "\n",
+        "    if (name === ToolName.ADD) {\n",
+        "      const validatedArgs = AddSchema.parse(args);\n",
+        "      const sum = validatedArgs.a + validatedArgs.b;\n",
+        "      return {\n",
+        "        content: [\n",
+        "          {\n",
+        "            type: \"text\",\n",
+        "            text: `The sum of ${validatedArgs.a} and ${validatedArgs.b} is ${sum}.`,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        491,
+        500
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            501,
+            510
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "          },\n",
+        "        ],\n",
+        "      };\n",
+        "    }\n",
+        "\n",
+        "    if (name === ToolName.LONG_RUNNING_OPERATION) {\n",
+        "      const validatedArgs = LongRunningOperationSchema.parse(args);\n",
+        "      const { duration, steps } = validatedArgs;\n",
+        "      const stepDuration = duration / steps;\n",
+        "      const progressToken = request.params._meta?.progressToken;\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        501,
+        510
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            511,
+            520
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "      for (let i = 1; i < steps + 1; i++) {\n",
+        "        await new Promise((resolve) =>\n",
+        "          setTimeout(resolve, stepDuration * 1000)\n",
+        "        );\n",
+        "\n",
+        "        if (progressToken !== undefined) {\n",
+        "          await server.notification({\n",
+        "            method: \"notifications/progress\",\n",
+        "            params: {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        511,
+        520
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            521,
+            530
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "              progress: i,\n",
+        "              total: steps,\n",
+        "              progressToken,\n",
+        "            },\n",
+        "          });\n",
+        "        }\n",
+        "      }\n",
+        "\n",
+        "      return {\n",
+        "        content: [\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        521,
+        530
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            531,
+            540
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "          {\n",
+        "            type: \"text\",\n",
+        "            text: `Long running operation completed. Duration: ${duration} seconds, Steps: ${steps}.`,\n",
+        "          },\n",
+        "        ],\n",
+        "      };\n",
+        "    }\n",
+        "\n",
+        "    if (name === ToolName.PRINT_ENV) {\n",
+        "      return {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        531,
+        540
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            541,
+            550
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        content: [\n",
+        "          {\n",
+        "            type: \"text\",\n",
+        "            text: JSON.stringify(process.env, null, 2),\n",
+        "          },\n",
+        "        ],\n",
+        "      };\n",
+        "    }\n",
+        "\n",
+        "    if (name === ToolName.SAMPLE_LLM) {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        541,
+        550
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            551,
+            560
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      const validatedArgs = SampleLLMSchema.parse(args);\n",
+        "      const { prompt, maxTokens } = validatedArgs;\n",
+        "\n",
+        "      const result = await requestSampling(\n",
+        "        prompt,\n",
+        "        ToolName.SAMPLE_LLM,\n",
+        "        maxTokens\n",
+        "      );\n",
+        "      return {\n",
+        "        content: [\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        551,
+        560
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            561,
+            570
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "          { type: \"text\", text: `LLM sampling result: ${result.content.text}` },\n",
+        "        ],\n",
+        "      };\n",
+        "    }\n",
+        "\n",
+        "    if (name === ToolName.GET_TINY_IMAGE) {\n",
+        "      GetTinyImageSchema.parse(args);\n",
+        "      return {\n",
+        "        content: [\n",
+        "          {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        561,
+        570
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            571,
+            580
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "            type: \"text\",\n",
+        "            text: \"This is a tiny image:\",\n",
+        "          },\n",
+        "          {\n",
+        "            type: \"image\",\n",
+        "            data: MCP_TINY_IMAGE,\n",
+        "            mimeType: \"image/png\",\n",
+        "          },\n",
+        "          {\n",
+        "            type: \"text\",\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        571,
+        580
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            581,
+            590
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "            text: \"The image above is the MCP tiny image.\",\n",
+        "          },\n",
+        "        ],\n",
+        "      };\n",
+        "    }\n",
+        "\n",
+        "    if (name === ToolName.GET_RESOURCE_REFERENCE) {\n",
+        "      const validatedArgs = GetResourceReferenceSchema.parse(args);\n",
+        "      const resourceId = validatedArgs.resourceId;\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        581,
+        590
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            591,
+            600
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      const resourceIndex = resourceId - 1;\n",
+        "      if (resourceIndex < 0 || resourceIndex >= ALL_RESOURCES.length) {\n",
+        "        throw new Error(`Resource with ID ${resourceId} does not exist`);\n",
+        "      }\n",
+        "\n",
+        "      const resource = ALL_RESOURCES[resourceIndex];\n",
+        "\n",
+        "      return {\n",
+        "        content: [\n",
+        "          {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        591,
+        600
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            601,
+            610
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "            type: \"text\",\n",
+        "            text: `Returning resource reference for Resource ${resourceId}:`,\n",
+        "          },\n",
+        "          {\n",
+        "            type: \"resource\",\n",
+        "            resource: resource,\n",
+        "          },\n",
+        "          {\n",
+        "            type: \"text\",\n",
+        "            text: `You can access this resource using the URI: ${resource.uri}`,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        601,
+        610
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            611,
+            620
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "          },\n",
+        "        ],\n",
+        "      };\n",
+        "    }\n",
+        "\n",
+        "    if (name === ToolName.ANNOTATED_MESSAGE) {\n",
+        "      const { messageType, includeImage } = AnnotatedMessageSchema.parse(args);\n",
+        "\n",
+        "      const content = [];\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        611,
+        620
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            621,
+            630
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      // Main message with different priorities/audiences based on type\n",
+        "      if (messageType === \"error\") {\n",
+        "        content.push({\n",
+        "          type: \"text\",\n",
+        "          text: \"Error: Operation failed\",\n",
+        "          annotations: {\n",
+        "            priority: 1.0, // Errors are highest priority\n",
+        "            audience: [\"user\", \"assistant\"], // Both need to know about errors\n",
+        "          },\n",
+        "        });\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        621,
+        630
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            631,
+            640
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      } else if (messageType === \"success\") {\n",
+        "        content.push({\n",
+        "          type: \"text\",\n",
+        "          text: \"Operation completed successfully\",\n",
+        "          annotations: {\n",
+        "            priority: 0.7, // Success messages are important but not critical\n",
+        "            audience: [\"user\"], // Success mainly for user consumption\n",
+        "          },\n",
+        "        });\n",
+        "      } else if (messageType === \"debug\") {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        631,
+        640
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            641,
+            650
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        content.push({\n",
+        "          type: \"text\",\n",
+        "          text: \"Debug: Cache hit ratio 0.95, latency 150ms\",\n",
+        "          annotations: {\n",
+        "            priority: 0.3, // Debug info is low priority\n",
+        "            audience: [\"assistant\"], // Technical details for assistant\n",
+        "          },\n",
+        "        });\n",
+        "      }\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        641,
+        650
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            651,
+            660
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      // Optional image with its own annotations\n",
+        "      if (includeImage) {\n",
+        "        content.push({\n",
+        "          type: \"image\",\n",
+        "          data: MCP_TINY_IMAGE,\n",
+        "          mimeType: \"image/png\",\n",
+        "          annotations: {\n",
+        "            priority: 0.5,\n",
+        "            audience: [\"user\"], // Images primarily for user visualization\n",
+        "          },\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        651,
+        660
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            661,
+            670
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        });\n",
+        "      }\n",
+        "\n",
+        "      return { content };\n",
+        "    }\n",
+        "\n",
+        "    if (name === ToolName.GET_RESOURCE_LINKS) {\n",
+        "      const { count } = GetResourceLinksSchema.parse(args);\n",
+        "      const content = [];\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        661,
+        670
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            671,
+            680
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      // Add intro text\n",
+        "      content.push({\n",
+        "        type: \"text\",\n",
+        "        text: `Here are ${count} resource links to resources available in this server (see full output in tool response if your client does not support resource_link yet):`,\n",
+        "      });\n",
+        "\n",
+        "      // Return resource links to actual resources from ALL_RESOURCES\n",
+        "      const actualCount = Math.min(count, ALL_RESOURCES.length);\n",
+        "      for (let i = 0; i < actualCount; i++) {\n",
+        "        const resource = ALL_RESOURCES[i];\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        671,
+        680
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            681,
+            690
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        content.push({\n",
+        "          type: \"resource_link\",\n",
+        "          uri: resource.uri,\n",
+        "          name: resource.name,\n",
+        "          description: `Resource ${i + 1}: ${\n",
+        "            resource.mimeType === \"text/plain\"\n",
+        "              ? \"plaintext resource\"\n",
+        "              : \"binary blob resource\"\n",
+        "          }`,\n",
+        "          mimeType: resource.mimeType,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        681,
+        690
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            691,
+            700
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        });\n",
+        "      }\n",
+        "\n",
+        "      return { content };\n",
+        "    }\n",
+        "\n",
+        "    throw new Error(`Unknown tool: ${name}`);\n",
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(CompleteRequestSchema, async (request) => {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        691,
+        700
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            701,
+            710
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    const { ref, argument } = request.params;\n",
+        "\n",
+        "    if (ref.type === \"ref/resource\") {\n",
+        "      const resourceId = ref.uri.split(\"/\").pop();\n",
+        "      if (!resourceId) return { completion: { values: [] } };\n",
+        "\n",
+        "      // Filter resource IDs that start with the input value\n",
+        "      const values = EXAMPLE_COMPLETIONS.resourceId.filter((id) =>\n",
+        "        id.startsWith(argument.value)\n",
+        "      );\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        701,
+        710
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            711,
+            720
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "      return { completion: { values, hasMore: false, total: values.length } };\n",
+        "    }\n",
+        "\n",
+        "    if (ref.type === \"ref/prompt\") {\n",
+        "      // Handle completion for prompt arguments\n",
+        "      const completions =\n",
+        "        EXAMPLE_COMPLETIONS[argument.name as keyof typeof EXAMPLE_COMPLETIONS];\n",
+        "      if (!completions) return { completion: { values: [] } };\n",
+        "\n",
+        "      const values = completions.filter((value) =>\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        711,
+        720
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            721,
+            730
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "        value.startsWith(argument.value)\n",
+        "      );\n",
+        "      return { completion: { values, hasMore: false, total: values.length } };\n",
+        "    }\n",
+        "\n",
+        "    throw new Error(`Unknown reference type`);\n",
+        "  });\n",
+        "\n",
+        "  server.setRequestHandler(SetLevelRequestSchema, async (request) => {\n",
+        "    const { level } = request.params;\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        721,
+        730
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            731,
+            740
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    logLevel = level;\n",
+        "\n",
+        "    // Demonstrate different log levels\n",
+        "    await server.notification({\n",
+        "      method: \"notifications/message\",\n",
+        "      params: {\n",
+        "        level: \"debug\",\n",
+        "        logger: \"test-server\",\n",
+        "        data: `Logging level set to: ${logLevel}`,\n",
+        "      },\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        731,
+        740
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            741,
+            750
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/everything.ts"
+        }
+      ],
+      "original": [
+        "    });\n",
+        "\n",
+        "    return {};\n",
+        "  });\n",
+        "\n",
+        "  const cleanup = async () => {\n",
+        "    if (subsUpdateInterval) clearInterval(subsUpdateInterval);\n",
+        "    if (logsUpdateInterval) clearInterval(logsUpdateInterval);\n",
+        "    if (stdErrUpdateInterval) clearInterval(stdErrUpdateInterval);\n",
+        "  };\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        741,
+        750
+      ],
+      "module": "src/everything/everything.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "import { StreamableHTTPServerTransport } from \"@modelcontextprotocol/sdk/server/streamableHttp.js\";\n",
+        "import { InMemoryEventStore } from '@modelcontextprotocol/sdk/examples/shared/inMemoryEventStore.js';\n",
+        "import express, { Request, Response } from \"express\";\n",
+        "import { createServer } from \"./everything.js\";\n",
+        "import { randomUUID } from 'node:crypto';\n",
+        "\n",
+        "console.error('Starting Streamable HTTP server...');\n",
+        "\n",
+        "const app = express();\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            11,
+            20
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "const transports: Map<string, StreamableHTTPServerTransport> = new Map<string, StreamableHTTPServerTransport>();\n",
+        "\n",
+        "app.post('/mcp', async (req: Request, res: Response) => {\n",
+        "  console.error('Received MCP POST request');\n",
+        "  try {\n",
+        "    // Check for existing session ID\n",
+        "    const sessionId = req.headers['mcp-session-id'] as string | undefined;\n",
+        "    let transport: StreamableHTTPServerTransport;\n",
+        "\n",
+        "    if (sessionId && transports.has(sessionId)) {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        11,
+        20
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            21,
+            30
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "      // Reuse existing transport\n",
+        "      transport = transports.get(sessionId)!;\n",
+        "    } else if (!sessionId) {\n",
+        "\n",
+        "      const { server, cleanup } = createServer();\n",
+        "\n",
+        "      // New initialization request\n",
+        "      const eventStore = new InMemoryEventStore();\n",
+        "      transport = new StreamableHTTPServerTransport({\n",
+        "        sessionIdGenerator: () => randomUUID(),\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        21,
+        30
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            31,
+            40
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "        eventStore, // Enable resumability\n",
+        "        onsessioninitialized: (sessionId: string) => {\n",
+        "          // Store the transport by session ID when session is initialized\n",
+        "          // This avoids race conditions where requests might come in before the session is stored\n",
+        "          console.error(`Session initialized with ID: ${sessionId}`);\n",
+        "          transports.set(sessionId, transport);\n",
+        "        }\n",
+        "      });\n",
+        "\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        31,
+        40
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            41,
+            50
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "      // Set up onclose handler to clean up transport when closed\n",
+        "      server.onclose = async () => {\n",
+        "        const sid = transport.sessionId;\n",
+        "        if (sid && transports.has(sid)) {\n",
+        "          console.error(`Transport closed for session ${sid}, removing from transports map`);\n",
+        "          transports.delete(sid);\n",
+        "          await cleanup();\n",
+        "        }\n",
+        "      };\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        41,
+        50
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            51,
+            60
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "      // Connect the transport to the MCP server BEFORE handling the request\n",
+        "      // so responses can flow back through the same transport\n",
+        "      await server.connect(transport);\n",
+        "\n",
+        "      await transport.handleRequest(req, res);\n",
+        "      return; // Already handled\n",
+        "    } else {\n",
+        "      // Invalid request - no session ID or not initialization request\n",
+        "      res.status(400).json({\n",
+        "        jsonrpc: '2.0',\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        51,
+        60
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            61,
+            70
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "        error: {\n",
+        "          code: -32000,\n",
+        "          message: 'Bad Request: No valid session ID provided',\n",
+        "        },\n",
+        "        id: req?.body?.id,\n",
+        "      });\n",
+        "      return;\n",
+        "    }\n",
+        "\n",
+        "    // Handle the request with existing transport - no need to reconnect\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        61,
+        70
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            71,
+            80
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "    // The existing transport is already connected to the server\n",
+        "    await transport.handleRequest(req, res);\n",
+        "  } catch (error) {\n",
+        "    console.error('Error handling MCP request:', error);\n",
+        "    if (!res.headersSent) {\n",
+        "      res.status(500).json({\n",
+        "        jsonrpc: '2.0',\n",
+        "        error: {\n",
+        "          code: -32603,\n",
+        "          message: 'Internal server error',\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        71,
+        80
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            81,
+            90
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "        },\n",
+        "        id: req?.body?.id,\n",
+        "      });\n",
+        "      return;\n",
+        "    }\n",
+        "  }\n",
+        "});\n",
+        "\n",
+        "// Handle GET requests for SSE streams (using built-in support from StreamableHTTP)\n",
+        "app.get('/mcp', async (req: Request, res: Response) => {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        81,
+        90
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            91,
+            100
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "  console.error('Received MCP GET request');\n",
+        "  const sessionId = req.headers['mcp-session-id'] as string | undefined;\n",
+        "  if (!sessionId || !transports.has(sessionId)) {\n",
+        "    res.status(400).json({\n",
+        "      jsonrpc: '2.0',\n",
+        "      error: {\n",
+        "        code: -32000,\n",
+        "        message: 'Bad Request: No valid session ID provided',\n",
+        "      },\n",
+        "      id: req?.body?.id,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        91,
+        100
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            101,
+            110
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "    });\n",
+        "    return;\n",
+        "  }\n",
+        "\n",
+        "  // Check for Last-Event-ID header for resumability\n",
+        "  const lastEventId = req.headers['last-event-id'] as string | undefined;\n",
+        "  if (lastEventId) {\n",
+        "    console.error(`Client reconnecting with Last-Event-ID: ${lastEventId}`);\n",
+        "  } else {\n",
+        "    console.error(`Establishing new SSE stream for session ${sessionId}`);\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        101,
+        110
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            111,
+            120
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "  }\n",
+        "\n",
+        "  const transport = transports.get(sessionId);\n",
+        "  await transport!.handleRequest(req, res);\n",
+        "});\n",
+        "\n",
+        "// Handle DELETE requests for session termination (according to MCP spec)\n",
+        "app.delete('/mcp', async (req: Request, res: Response) => {\n",
+        "  const sessionId = req.headers['mcp-session-id'] as string | undefined;\n",
+        "  if (!sessionId || !transports.has(sessionId)) {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        111,
+        120
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            121,
+            130
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "    res.status(400).json({\n",
+        "      jsonrpc: '2.0',\n",
+        "      error: {\n",
+        "        code: -32000,\n",
+        "        message: 'Bad Request: No valid session ID provided',\n",
+        "      },\n",
+        "      id: req?.body?.id,\n",
+        "    });\n",
+        "    return;\n",
+        "  }\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        121,
+        130
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            131,
+            140
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "  console.error(`Received session termination request for session ${sessionId}`);\n",
+        "\n",
+        "  try {\n",
+        "    const transport = transports.get(sessionId);\n",
+        "    await transport!.handleRequest(req, res);\n",
+        "  } catch (error) {\n",
+        "    console.error('Error handling session termination:', error);\n",
+        "    if (!res.headersSent) {\n",
+        "      res.status(500).json({\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        131,
+        140
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            141,
+            150
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "        jsonrpc: '2.0',\n",
+        "        error: {\n",
+        "          code: -32603,\n",
+        "          message: 'Error handling session termination',\n",
+        "        },\n",
+        "        id: req?.body?.id,\n",
+        "      });\n",
+        "      return;\n",
+        "    }\n",
+        "  }\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        141,
+        150
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            151,
+            160
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "});\n",
+        "\n",
+        "// Start the server\n",
+        "const PORT = process.env.PORT || 3001;\n",
+        "app.listen(PORT, () => {\n",
+        "  console.error(`MCP Streamable HTTP Server listening on port ${PORT}`);\n",
+        "});\n",
+        "\n",
+        "// Handle server shutdown\n",
+        "process.on('SIGINT', async () => {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        151,
+        160
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            161,
+            170
+          ],
+          "path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers/src/everything/streamableHttp.ts"
+        }
+      ],
+      "original": [
+        "  console.error('Shutting down server...');\n",
+        "\n",
+        "  // Close all active transports to properly clean up resources\n",
+        "  for (const sessionId in transports) {\n",
+        "    try {\n",
+        "      console.error(`Closing transport for session ${sessionId}`);\n",
+        "      await transports.get(sessionId)!.close();\n",
+        "      transports.delete(sessionId);\n",
+        "    } catch (error) {\n",
+        "      console.error(`Error closing transport for session ${sessionId}:`, error);\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        161,
+        170
+      ],
+      "module": "src/everything/streamableHttp.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "modelcontextprotocol~servers",
+      "commit": null
+    },
+    "transformations": []
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "total_projects": 1,
+  "processed_projects": 1,
+  "total_problems": 140,
+  "project_stats": {
+    "modelcontextprotocol~servers": {
+      "problem_count": 140,
+      "project_path": "datasets_root/perm2k_ts/repos/valid/modelcontextprotocol~servers"
+    }
+  }
+}
