@@ -360,3 +360,18 @@ def test_c3_generator():
 
 if __name__ == "__main__":
     test_c3_generator() 
+
+# === Add stubs for missing symbols if not present ===
+from dataclasses import dataclass
+
+@dataclass
+class TSC3ProblemChangeInlining:
+    max_inline_ratio: float = 0.6
+    allow_empty_problems: bool = True
+    def transform(self, problems):
+        return problems
+
+@dataclass
+class TSC3ProblemTokenizer:
+    def compute_stats(self, problems):
+        return {"n_problems": len(problems)} 

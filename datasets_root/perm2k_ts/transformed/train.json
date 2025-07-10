@@ -1,0 +1,1047 @@
+[
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/utils/index.d.test.ts"
+        }
+      ],
+      "original": [
+        "import type { Alike, Equal, Expect, ExpectFalse, IsAny, NotEqual } from './index'\n",
+        "\n",
+        "type cases = [\n",
+        "  /* Expect */\n",
+        "  Expect<true>,\n",
+        "  // @ts-expect-error\n",
+        "  Expect<false>,\n",
+        "\n",
+        "  /* ExpectFalse */\n",
+        "  ExpectFalse<false>,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "utils/index.d.test.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            11,
+            20
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/utils/index.d.test.ts"
+        }
+      ],
+      "original": [
+        "  // @ts-expect-error\n",
+        "  ExpectFalse<true>,\n",
+        "\n",
+        "  /* Equal */\n",
+        "  Expect<Equal<true, true>>,\n",
+        "  ExpectFalse<Equal<false, true>>,\n",
+        "  Expect<Equal<'123', '123'>>,\n",
+        "  ExpectFalse<Equal<'123', string>>,\n",
+        "  Expect<Equal<{ a: number }, { a: number }>>,\n",
+        "  ExpectFalse<Equal<{ a: number }, { b: number }>>,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        11,
+        20
+      ],
+      "module": "utils/index.d.test.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            21,
+            30
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/utils/index.d.test.ts"
+        }
+      ],
+      "original": [
+        "  ExpectFalse<Equal<any, '123'>>,\n",
+        "  ExpectFalse<Equal<any, unknown>>,\n",
+        "\n",
+        "  /* Not Equal */\n",
+        "  Expect<NotEqual<false, true>>,\n",
+        "  ExpectFalse<NotEqual<true, true>>,\n",
+        "\n",
+        "  /* IsAny */\n",
+        "  Expect<IsAny<any>>,\n",
+        "  ExpectFalse<IsAny<1>>,\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        21,
+        30
+      ],
+      "module": "utils/index.d.test.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/utils/index.d.ts"
+        }
+      ],
+      "original": [
+        "export type Expect<T extends true> = T\n",
+        "export type ExpectTrue<T extends true> = T\n",
+        "export type ExpectFalse<T extends false> = T\n",
+        "export type IsTrue<T extends true> = T\n",
+        "export type IsFalse<T extends false> = T\n",
+        "\n",
+        "export type Equal<X, Y> =\n",
+        "  (<T>() => T extends X ? 1 : 2) extends\n",
+        "  (<T>() => T extends Y ? 1 : 2) ? true : false\n",
+        "export type NotEqual<X, Y> = true extends Equal<X, Y> ? false : true\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "utils/index.d.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            11,
+            20
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/utils/index.d.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "// https://stackoverflow.com/questions/49927523/disallow-call-with-any/49928360#49928360\n",
+        "export type IsAny<T> = 0 extends (1 & T) ? true : false\n",
+        "export type NotAny<T> = true extends IsAny<T> ? false : true\n",
+        "\n",
+        "export type Debug<T> = { [K in keyof T]: T[K] }\n",
+        "export type MergeInsertions<T> =\n",
+        "  T extends object\n",
+        "    ? { [K in keyof T]: MergeInsertions<T[K]> }\n",
+        "    : T\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        11,
+        20
+      ],
+      "module": "utils/index.d.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/translate-cli.ts"
+        }
+      ],
+      "original": [
+        "import { updateREADMEs } from './readme'\n",
+        "import { translateAllQuizzes } from './translate'\n",
+        "import { defaultLocale } from './locales'\n",
+        "\n",
+        "async function run() {\n",
+        "  await translateAllQuizzes(defaultLocale, 'zh-CN')\n",
+        "  await translateAllQuizzes(defaultLocale, 'ja')\n",
+        "  await translateAllQuizzes(defaultLocale, 'pt-BR')\n",
+        "  await updateREADMEs()\n",
+        "}\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "scripts/translate-cli.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/locales.ts"
+        }
+      ],
+      "original": [
+        "export const defaultLocale = 'en'\n",
+        "\n",
+        "export const supportedLocales = ['en', 'zh-CN', 'ja', 'ko', 'pt-BR'] as const\n",
+        "\n",
+        "export const messages = {\n",
+        "  'en': require('./locales/en.json'),\n",
+        "  'zh-CN': require('./locales/zh-CN.json'),\n",
+        "  'ja': require('./locales/ja.json'),\n",
+        "  'ko': require('./locales/ko.json'),\n",
+        "  'pt-BR': require('./locales/pt-BR.json'),\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "scripts/locales.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            11,
+            20
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/locales.ts"
+        }
+      ],
+      "original": [
+        "}\n",
+        "\n",
+        "export type SupportedLocale = keyof typeof messages\n",
+        "\n",
+        "export function t(locale: SupportedLocale, key: string): string {\n",
+        "  const result = (messages[locale] && messages[locale][key]) || messages[defaultLocale][key]\n",
+        "  if (!result)\n",
+        "    throw new Error(`Missing message for key \"${key}\"`)\n",
+        "  return result\n",
+        "}\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        11,
+        20
+      ],
+      "module": "scripts/locales.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            1,
+            10
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "import path from 'node:path'\n",
+        "import fs from 'fs-extra'\n",
+        "import fg from 'fast-glob'\n",
+        "import YAML from 'js-yaml'\n",
+        "import type { Quiz, QuizMetaInfo } from './types'\n",
+        "import { defaultLocale, supportedLocales } from './locales'\n",
+        "\n",
+        "export async function loadFile(filepath: string) {\n",
+        "  if (fs.existsSync(filepath))\n",
+        "    return await fs.readFile(filepath, 'utf-8')\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        1,
+        10
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            11,
+            20
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "  return undefined\n",
+        "}\n",
+        "\n",
+        "export async function loadLocaleVariations<T = string>(\n",
+        "  filepath: string,\n",
+        "  preprocessor: (s: string) => T = s => s as any as T,\n",
+        ") {\n",
+        "  const { ext, dir, name } = path.parse(filepath)\n",
+        "  const data: Record<string, T> = {}\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        11,
+        20
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            21,
+            30
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "  for (const locale of supportedLocales) {\n",
+        "    const file = preprocessor(await loadFile(path.join(dir, `${name}.${locale}${ext}`)) || '')\n",
+        "\n",
+        "    if (file)\n",
+        "      data[locale] = file\n",
+        "  }\n",
+        "\n",
+        "  if (!data[defaultLocale]) {\n",
+        "    // default version\n",
+        "    const file = preprocessor(await loadFile(filepath) || '')\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        21,
+        30
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            31,
+            40
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "    if (file)\n",
+        "      data[defaultLocale] = file\n",
+        "  }\n",
+        "\n",
+        "  return data\n",
+        "}\n",
+        "\n",
+        "export function readmeCleanUp(text: string) {\n",
+        "  return text\n",
+        "    .replace(/<!--info-header-start-->[\\s\\S]*<!--info-header-end-->/, '')\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        31,
+        40
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            41,
+            50
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "    .replace(/<!--info-footer-start-->[\\s\\S]*<!--info-footer-end-->/, '')\n",
+        "    .trim()\n",
+        "}\n",
+        "\n",
+        "export function loadInfo(s: string): Partial<QuizMetaInfo> | undefined {\n",
+        "  const object = YAML.load(s) as any\n",
+        "  if (!object)\n",
+        "    return undefined\n",
+        "\n",
+        "  const arrayKeys = ['tags', 'related']\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        41,
+        50
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            51,
+            60
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "\n",
+        "  for (const key of arrayKeys) {\n",
+        "    if (object[key]) {\n",
+        "      object[key] = (object[key] || '')\n",
+        "        .toString()\n",
+        "        .split(',')\n",
+        "        .map((i: string) => i.trim())\n",
+        "        .filter(Boolean)\n",
+        "    }\n",
+        "    else {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        51,
+        60
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            61,
+            70
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "      object[key] = undefined\n",
+        "    }\n",
+        "  }\n",
+        "\n",
+        "  return object\n",
+        "}\n",
+        "\n",
+        "export const QUIZ_ROOT = path.resolve(__dirname, '../questions')\n",
+        "\n",
+        "export async function loadQuizzes(): Promise<Quiz[]> {\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        61,
+        70
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            71,
+            80
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "  const folders = await fg('{0..9}*-*', {\n",
+        "    onlyDirectories: true,\n",
+        "    cwd: QUIZ_ROOT,\n",
+        "  })\n",
+        "\n",
+        "  const quizzes = await Promise.all(\n",
+        "    folders.map(async dir => loadQuiz(dir)),\n",
+        "  )\n",
+        "\n",
+        "  return quizzes\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        71,
+        80
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            81,
+            90
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "}\n",
+        "\n",
+        "export async function loadQuiz(dir: string): Promise<Quiz> {\n",
+        "  return {\n",
+        "    no: Number(dir.replace(/^(\\d+)-.*/, '$1')),\n",
+        "    difficulty: dir.replace(/^\\d+-(.+?)-.*$/, '$1') as any,\n",
+        "    path: dir,\n",
+        "    info: await loadLocaleVariations(path.join(QUIZ_ROOT, dir, 'info.yml'), loadInfo),\n",
+        "    readme: await loadLocaleVariations(path.join(QUIZ_ROOT, dir, 'README.md'), readmeCleanUp),\n",
+        "    template: await loadFile(path.join(QUIZ_ROOT, dir, 'template.ts')) || '',\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        81,
+        90
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            91,
+            100
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "    tests: await loadFile(path.join(QUIZ_ROOT, dir, 'test-cases.ts')),\n",
+        "  }\n",
+        "}\n",
+        "\n",
+        "export async function loadQuizByNo(no: number | string) {\n",
+        "  const folders = await fg(`${no}-*`, {\n",
+        "    onlyDirectories: true,\n",
+        "    cwd: QUIZ_ROOT,\n",
+        "  })\n",
+        "\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        91,
+        100
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  },
+  {
+    "span": {
+      "headers": [
+        {
+          "change_tks": [],
+          "type": "function",
+          "line_range": [
+            101,
+            110
+          ],
+          "path": "datasets_root/perm2k_ts/repos/train/type-challenges~type-challenges/scripts/loader.ts"
+        }
+      ],
+      "original": [
+        "  if (folders.length)\n",
+        "    return await loadQuiz(folders[0])\n",
+        "\n",
+        "  return undefined\n",
+        "}\n",
+        "\n",
+        "export function resolveInfo(quiz: Quiz, locale: string = defaultLocale) {\n",
+        "  const info = { ...quiz.info[defaultLocale], ...quiz.info[locale] }\n",
+        "  info.tags = quiz.info[locale]?.tags || quiz.info[defaultLocale]?.tags || []\n",
+        "  info.related = quiz.info[locale]?.related || quiz.info[defaultLocale]?.related || []\n"
+      ],
+      "delta": {
+        "type": "modify"
+      },
+      "line_range": [
+        101,
+        110
+      ],
+      "module": "scripts/loader.ts"
+    },
+    "edit_line_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "relevant_changes": [],
+    "relevant_unchanged": {},
+    "change_type": "modified",
+    "src_info": {
+      "project": "type-challenges~type-challenges",
+      "commit": null
+    },
+    "transformations": []
+  }
+]

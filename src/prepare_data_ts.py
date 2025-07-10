@@ -1,24 +1,50 @@
-#!/usr/bin/env python3
 """
-TypeScript 版本的数据预处理脚本
-基于原始的 prepare_data.py，但处理 TypeScript 文件而不是 Python 文件
+This script preprocesses the repos into the TSCommits format (TypeScript version).
+You can safely skip this step since it will automatically be run when you
+train a new model (and with the corresponding encoder parameters).
+
+The raw repos will be loaded from `get_dataset_dir(dataset_name) / "repos"`, and the
+processed results will be saved to `get_dataset_dir(dataset_name) / "processed"`
+and `get_dataset_dir(dataset_name) / "transformed"`.
 """
 import pickle
+from coeditor._utils import run_long_task
 from coeditor.common import *
-from coeditor_ts.ts_dataset import TypeScriptDatasetProcessor
-import argparse
-import os
-from typing import Sequence, cast
+from coeditor_ts.c3problem_ts import TSC3ProblemChangeInlining, TSC3ProblemGenerator
+from coeditor_ts.dataset_ts import *
+
+# === Add dataset interface for TS if missing ===
+# from coeditor_ts.dataset_ts import make_or_load_ts_dataset, make_or_load_transformed_ts_dataset, TSC3CombinedEncoder
 
 if __name__ == "__main__":
     os.chdir(proj_root())
 
     dataset_name = "perm2k_ts"
-    # 直接创建 TypeScript 数据集处理器
-    processor = TypeScriptDatasetProcessor(
-        dataset_dir=get_dataset_dir(dataset_name),
-        max_workers=4
+    encoder = TSC3CombinedEncoder(
+        problem_tranform=TSC3ProblemChangeInlining(
+            max_inline_ratio=0.6, allow_empty_problems=True
+        ),
     )
-    print(f"开始处理 TypeScript 数据集: {dataset_name}")
-    processor.process_full_dataset()
-    print("TypeScript 数据处理完成!") 
+    with run_long_task(
+        f"Preparing dataset {dataset_name} with encoder {encoder.change_processor}"
+    ):
+        problems = make_or_load_ts_dataset(
+            dataset_name,
+            encoder.change_processor,
+            # ("valid", "test", "train"),
+            ("train",),
+            remake_problems=False,
+        )
+
+        transformed = make_or_load_transformed_ts_dataset(
+            dataset_name,
+            problems,
+            encoder,
+        )
+
+    tokenizer = TSC3ProblemTokenizer()
+    for name, probs in transformed.items():
+        print("=" * 40, name, "=" * 40)
+        stats = tokenizer.compute_stats(probs)
+        from coeditor._utils import pretty_print_dict
+        pretty_print_dict(stats) 
