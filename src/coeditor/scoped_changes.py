@@ -68,7 +68,7 @@ class ChangeScope:
     parent_scope: "ChangeScope | None"
 
     def __post_init__(self):
-        # compute header
+        # 计算头文件
         if isinstance(self.tree, ptree.Module):
             header_code = f"# module: {self.path.module}"
             header_line_range = line_range(0, 0, can_be_empty=True)
@@ -161,7 +161,7 @@ class ChangeScope:
         is_func = isinstance(tree, ptree.Function)
 
         def mk_span(stmts):
-            # remove leading newlines
+            # 移除前导换行符
             n_leading_newlines = 0
             for s in stmts:
                 if s.type == ptree.Newline.type:
@@ -180,7 +180,7 @@ class ChangeScope:
         else:
             content = []
         for s in content:
-            # we don't create inner scopes for function contents
+            # 对于函数内容，不创建内部作用域
             if is_func or _is_scope_statement(as_any(s)):
                 current_stmts.append(s)
             else:
@@ -191,7 +191,7 @@ class ChangeScope:
             spans.extend(mk_span(current_stmts))
 
         if is_func:
-            # we don't create inner scopes for function contents
+            # 对于函数内容，不创建内部作用域
             if not spans:
                 raise ValueError(f"Function with no spans: {path=}, {tree.get_code()=}")
             return scope
@@ -463,41 +463,51 @@ class NoProcessing(ProjectChangeProcessor[JProjectChange]):
         return [pchange]
 
 
+# 【guohx】从Git提交历史中增量计算项目编辑信息的主入口函数
 def edits_from_commit_history(
-    project_dir: Path,
-    history: Sequence[CommitInfo],
-    tempdir: Path,
-    change_processor: ProjectChangeProcessor[TProb] = NoProcessing(),
-    ignore_dirs=DefaultIgnoreDirs,
-    silent: bool = False,
-    time_limit: float | None = None,
-) -> Sequence[TProb]:
+    project_dir: Path,  # 【guohx】原始项目目录路径
+    history: Sequence[CommitInfo],  # 【guohx】要处理的提交历史列表，按时间顺序排列
+    tempdir: Path,  # 【guohx】临时工作目录路径，用于存放项目副本
+    change_processor: ProjectChangeProcessor[TProb] = NoProcessing(),  # 【guohx】变更处理器，负责生成问题对象，默认为无处理
+    ignore_dirs=DefaultIgnoreDirs,  # 【guohx】要忽略的目录集合，默认为系统默认忽略目录
+    silent: bool = False,  # 【guohx】是否静默模式，控制进度条显示
+    time_limit: float | None = None,  # 【guohx】处理时间限制（秒），None表示无限制
+) -> Sequence[TProb]:  # 【guohx】返回生成的问题对象序列
     """Incrementally compute the edits to a project from the git history.
     Note that this will change the file states in the project directory, so
     you should make a copy of the project before calling this function.
     """
+    # 【guohx】解析临时目录的绝对路径，确保路径正确
     tempdir = tempdir.resolve()
+    # 【guohx】检查临时目录是否已存在，存在则抛出异常避免覆盖
     if tempdir.exists():
         raise FileExistsError(f"Workdir '{tempdir}' already exists.")
+    # 【guohx】保存当前Jedi快速解析器设置，用于后续恢复
     use_fast_parser = jedi.settings.fast_parser
+    # 【guohx】创建临时目录，parents=True创建父目录，exist_ok=False确保目录不存在
     tempdir.mkdir(parents=True, exist_ok=False)
     try:
+        # 【guohx】复制原始项目的.git目录到临时目录，保持Git历史信息
         run_command(
-            ["cp", "-r", str(project_dir / ".git"), str(tempdir)],
-            cwd=project_dir.parent,
+            ["cp", "-r", str(project_dir / ".git"), str(tempdir)],  # 【guohx】递归复制.git目录
+            cwd=project_dir.parent,  # 【guohx】在项目父目录下执行命令
         )
 
+        # 【guohx】调用内部函数进行实际的提交历史处理
         return _edits_from_commit_history(
-            tempdir,
-            history,
-            change_processor,
-            ignore_dirs,
-            silent,
-            time_limit=time_limit,
+            tempdir,  # 【guohx】临时工作目录
+            history,  # 【guohx】提交历史
+            change_processor,  # 【guohx】变更处理器
+            ignore_dirs,  # 【guohx】忽略目录
+            silent,  # 【guohx】静默模式
+            time_limit=time_limit,  # 【guohx】时间限制
         )
     finally:
-        shutil.rmtree(tempdir)
+        # 【guohx】无论处理成功还是失败，都要清理临时目录
+        shutil.rmtree(tempdir)  # 【guohx】递归删除临时目录及其内容
+        # 【guohx】恢复Jedi快速解析器设置
         jedi.settings.fast_parser = use_fast_parser
+        # 【guohx】强制垃圾回收，释放内存
         gc.collect()
 
 
@@ -534,21 +544,26 @@ def parse_module_script(project: jedi.Project, path: Path):
     return jmod, script
 
 
+# 【guohx】从Git提交历史中增量计算编辑信息的核心内部函数，实现时间倒序遍历和模块变更分析
 def _edits_from_commit_history(
-    project: Path,
-    history: Sequence[CommitInfo],
-    change_processor: ProjectChangeProcessor[TProb],
-    ignore_dirs: set[str],
-    silent: bool,
-    time_limit: _Second | None,
-) -> Sequence[TProb]:
+    project: Path,  # 【guohx】项目工作目录路径（临时目录）
+    history: Sequence[CommitInfo],  # 【guohx】提交历史列表，按时间顺序排列
+    change_processor: ProjectChangeProcessor[TProb],  # 【guohx】变更处理器，负责生成问题对象
+    ignore_dirs: set[str],  # 【guohx】要忽略的目录集合
+    silent: bool,  # 【guohx】是否静默模式，控制进度条显示
+    time_limit: _Second | None,  # 【guohx】处理时间限制（秒），None表示无限制
+) -> Sequence[TProb]:  # 【guohx】返回生成的问题对象序列
+    # 【guohx】记录处理开始时间，用于超时检查
     start_time = time.time()
+    # 【guohx】初始化Jedi脚本缓存字典，键为相对路径，值为Jedi脚本对象
     scripts = dict[RelPath, jedi.Script]()
+    # 【guohx】初始化结果列表，存储生成的问题对象
     results = list[TProb]()
 
+    # 【guohx】检查是否超时的内部函数
     def has_timeouted(step):
-        if time_limit and (time.time() - start_time > time_limit):
-            warnings.warn(
+        if time_limit and (time.time() - start_time > time_limit):  # 【guohx】如果设置了时间限制且已超时
+            warnings.warn(  # 【guohx】输出超时警告信息
                 f"_edits_from_commit_history timed out for {project}. ({time_limit=}) "
                 f"Partial results ({step}/{len(history)-1}) will be returned."
             )
@@ -556,157 +571,184 @@ def _edits_from_commit_history(
         else:
             return False
 
+    # 【guohx】解析Python模块的内部函数，使用Jedi进行语法分析
     def parse_module(path: Path):
-        with _tlogger.timed("parse_module"):
-            m, s = parse_module_script(proj, path)
-            scripts[to_rel_path(path.relative_to(proj._path))] = s
-            return m
+        with _tlogger.timed("parse_module"):  # 【guohx】记录模块解析时间
+            m, s = parse_module_script(proj, path)  # 【guohx】解析模块并获取JModule和Script对象
+            scripts[to_rel_path(path.relative_to(proj._path))] = s  # 【guohx】将Script对象缓存到scripts字典
+            return m  # 【guohx】返回JModule对象
 
+    # 【guohx】切换到指定提交的内部函数
     def checkout_commit(commit_hash: str):
-        with _tlogger.timed("checkout"):
-            subprocess.run(
-                ["git", "checkout", "-f", commit_hash],
-                cwd=project,
-                capture_output=True,
-                check=True,
+        with _tlogger.timed("checkout"):  # 【guohx】记录Git checkout时间
+            subprocess.run(  # 【guohx】执行Git checkout命令
+                ["git", "checkout", "-f", commit_hash],  # 【guohx】强制切换到指定提交
+                cwd=project,  # 【guohx】在项目目录下执行
+                capture_output=True,  # 【guohx】捕获输出
+                check=True,  # 【guohx】检查命令是否成功
             )
 
-    # to ensure sure we are not accidentally overriding real code changes
+    # 【guohx】确保工作目录只包含.git目录，避免意外覆盖真实代码
     if list(project.iterdir()) != [project / ".git"]:
         raise FileExistsError(f"Directory '{project}' should contain only '.git'.")
 
-    # checkout to the first commit
-    commit_now = history[-1]
-    checkout_commit(commit_now.hash)
+    # 【guohx】切换到历史中的第一个提交（最新的提交）
+    commit_now = history[-1]  # 【guohx】获取最新的提交
+    checkout_commit(commit_now.hash)  # 【guohx】切换到最新提交
+    # 【guohx】创建Jedi项目对象，添加src目录到Python路径
     proj = jedi.Project(path=project, added_sys_path=[project / "src"])
+    # 【guohx】创建项目状态对象，包含项目和脚本信息
     pstate = ProjectState(proj, scripts)
 
-    # now we can get the first project state, although this not needed for now
-    # but we'll use it later for pre-edit analysis
+    # 【guohx】现在我们可以获取第一个项目状态，虽然现在不需要
+    # 【guohx】但稍后会用于预编辑分析
+    # 【guohx】收集初始的Python源文件列表
     init_srcs = [
-        to_rel_path(f.relative_to(project))
-        for f in rec_iter_files(project, dir_filter=lambda d: d.name not in ignore_dirs)
-        if f.suffix == ".py" and (project / f).exists()
+        to_rel_path(f.relative_to(project))  # 【guohx】转换为相对路径
+        for f in rec_iter_files(project, dir_filter=lambda d: d.name not in ignore_dirs)  # 【guohx】递归遍历文件，过滤忽略目录
+        if f.suffix == ".py" and (project / f).exists()  # 【guohx】只处理存在的Python文件
     ]
+    # 【guohx】构建路径到模块的映射字典，解析所有初始源文件
     path2module = {
-        f: parse_module(project / f)
-        for f in tqdm(init_srcs, desc="building initial project", disable=silent)
+        f: parse_module(project / f)  # 【guohx】解析每个Python文件为JModule对象
+        for f in tqdm(init_srcs, desc="building initial project", disable=silent)  # 【guohx】显示进度条
     }
 
+    # 【guohx】判断文件是否为源文件的内部函数
     def is_src(path_s: str) -> bool:
         path = Path(path_s)
-        return path.suffix == ".py" and all(p not in ignore_dirs for p in path.parts)
+        return path.suffix == ".py" and all(p not in ignore_dirs for p in path.parts)  # 【guohx】检查是否为Python文件且不在忽略目录中
 
+    # 【guohx】获取未来要处理的提交列表（时间倒序，从旧到新）
     future_commits = list(reversed(history[:-1]))
+    # 【guohx】遍历每个提交，进行增量编辑分析
     for step, commit_next in tqdm(
-        list(enumerate(future_commits)),
-        smoothing=0,
-        desc="processing commits",
-        disable=silent,
+        list(enumerate(future_commits)),  # 【guohx】枚举未来提交
+        smoothing=0,  # 【guohx】进度条平滑参数
+        desc="processing commits",  # 【guohx】进度条描述
+        disable=silent,  # 【guohx】根据静默模式控制进度条
     ):
+        # 【guohx】检查是否超时
         if has_timeouted(step):
             return results
-        # get changed files
-        changed_files = run_command(
+        # 【guohx】获取当前提交和下一个提交之间的文件变更
+        changed_files = run_command(  # 【guohx】执行Git diff命令
             [
                 "git",
                 "diff",
-                "--no-renames",
-                "--name-status",
-                commit_now.hash,
-                commit_next.hash,
+                "--no-renames",  # 【guohx】不检测重命名
+                "--name-status",  # 【guohx】只输出文件名和状态
+                commit_now.hash,  # 【guohx】当前提交
+                commit_next.hash,  # 【guohx】下一个提交
             ],
-            cwd=project,
-        ).splitlines()
+            cwd=project,  # 【guohx】在项目目录下执行
+        ).splitlines()  # 【guohx】按行分割输出
 
+        # 【guohx】初始化路径变更集合
         path_changes = set[Change[str]]()
 
+        # 【guohx】解析Git diff输出，识别文件变更类型
         for line in changed_files:
-            segs = line.split("\t")
-            if len(segs) == 2:
+            segs = line.split("\t")  # 【guohx】按制表符分割
+            if len(segs) == 2:  # 【guohx】两个字段：状态和路径
                 tag, path = segs
-                if not is_src(path):
+                if not is_src(path):  # 【guohx】如果不是源文件，跳过
                     continue
-                if tag.endswith("A"):
+                if tag.endswith("A"):  # 【guohx】添加的文件
                     path_changes.add(Added(path))
-                elif tag.endswith("D"):
+                elif tag.endswith("D"):  # 【guohx】删除的文件
                     path_changes.add(Deleted(path))
-                if tag.endswith("M"):
+                if tag.endswith("M"):  # 【guohx】修改的文件
                     path_changes.add(Modified(path, path))
-            elif len(segs) == 3:
+            elif len(segs) == 3:  # 【guohx】三个字段：状态、旧路径、新路径（重命名）
                 tag, path1, path2 = segs
-                assert tag.startswith("R")
-                if is_src(path1):
+                assert tag.startswith("R")  # 【guohx】确保是重命名操作
+                if is_src(path1):  # 【guohx】如果旧路径是源文件
                     path_changes.add(Deleted(path1))
-                if is_src(path2):
+                if is_src(path2):  # 【guohx】如果新路径是源文件
                     path_changes.add(Added(path2))
 
-        # make deep copys of changed modules
+        # 【guohx】深拷贝将要更改的模块，保存修改前的状态
         to_copy = {
-            to_rel_path(Path(path_change.before))
+            to_rel_path(Path(path_change.before))  # 【guohx】获取变更前的路径
             for path_change in path_changes
-            if not isinstance(path_change, Added)
+            if not isinstance(path_change, Added)  # 【guohx】只复制非新增的模块
         }
-        _deep_copy_subset_(path2module, to_copy)
+        _deep_copy_subset_(path2module, to_copy)  # 【guohx】深拷贝指定的模块
 
+        # 【guohx】切换到下一个提交
         checkout_commit(commit_next.hash)
 
+        # 【guohx】复制模块映射，准备更新
         new_path2module = path2module.copy()
+        # 【guohx】初始化变更字典，存储模块级别的变更
         changed = dict[ModuleName, JModuleChange]()
+        # 【guohx】处理每个路径变更
         for path_change in path_changes:
-            path = project / path_change.earlier
-            rel_path = to_rel_path(path.relative_to(project))
+            path = project / path_change.earlier  # 【guohx】获取变更前的路径
+            rel_path = to_rel_path(path.relative_to(project))  # 【guohx】转换为相对路径
+            # 【guohx】如果非新增变更且模块不存在，处理异常情况
             if not isinstance(path_change, Added) and rel_path not in new_path2module:
                 warnings.warn(f"No module for file: {project/rel_path}")
-                if isinstance(path_change, Deleted):
+                if isinstance(path_change, Deleted):  # 【guohx】如果是删除，跳过
                     continue
-                elif isinstance(path_change, Modified):
+                elif isinstance(path_change, Modified):  # 【guohx】如果是修改，转换为新增
                     path_change = Added(path_change.after)
+            # 【guohx】根据变更类型进行相应处理
             match path_change:
-                case Added():
-                    mod = parse_module(path)
-                    new_path2module[rel_path] = mod
-                    changed[mod.mname] = JModuleChange.from_modules(Added(mod))
-                case Deleted():
-                    mod = new_path2module.pop(rel_path)
-                    changed[mod.mname] = JModuleChange.from_modules(Deleted(mod))
-                case Modified(path1, path2):
-                    assert path1 == path2
-                    mod_old = new_path2module.pop(rel_path)
-                    new_path2module[rel_path] = mod_new = parse_module(path)
-                    changed[mod_new.mname] = JModuleChange.from_modules(
+                case Added():  # 【guohx】处理新增文件
+                    mod = parse_module(path)  # 【guohx】解析新模块
+                    new_path2module[rel_path] = mod  # 【guohx】添加到模块映射
+                    changed[mod.mname] = JModuleChange.from_modules(Added(mod))  # 【guohx】创建模块变更
+                case Deleted():  # 【guohx】处理删除文件
+                    mod = new_path2module.pop(rel_path)  # 【guohx】从映射中移除模块
+                    changed[mod.mname] = JModuleChange.from_modules(Deleted(mod))  # 【guohx】创建删除变更
+                case Modified(path1, path2):  # 【guohx】处理修改文件
+                    assert path1 == path2  # 【guohx】确保路径相同
+                    mod_old = new_path2module.pop(rel_path)  # 【guohx】移除旧模块
+                    new_path2module[rel_path] = mod_new = parse_module(path)  # 【guohx】解析新模块
+                    changed[mod_new.mname] = JModuleChange.from_modules(  # 【guohx】创建修改变更
                         Modified(mod_old, mod_new),
-                        return_unchanged=change_processor.use_unchanged(),
+                        return_unchanged=change_processor.use_unchanged(),  # 【guohx】根据处理器设置决定是否返回未变更部分
                     )
+            # 【guohx】检查是否超时
             if has_timeouted(step):
                 return results
 
+        # 【guohx】创建项目级别的模块变更
         modules_mod = Modified(path2module.values(), new_path2module.values())
+        # 【guohx】创建项目变更对象
         pchange = JProjectChange(project.name, changed, modules_mod, commit_next)
 
-        with _tlogger.timed("post_edit_analysis"):
-            post_analysis = change_processor.post_edit_analysis(
-                pstate,
-                new_path2module,
-                changed,
+        # 【guohx】执行后编辑分析
+        with _tlogger.timed("post_edit_analysis"):  # 【guohx】记录后编辑分析时间
+            post_analysis = change_processor.post_edit_analysis(  # 【guohx】调用处理器的后编辑分析
+                pstate,  # 【guohx】项目状态
+                new_path2module,  # 【guohx】新的模块映射
+                changed,  # 【guohx】变更信息
             )
+        # 【guohx】检查是否超时
         if has_timeouted(step):
             return results
 
-        # now go backwards in time to perform pre-edit analysis
-        checkout_commit(commit_now.hash)
-        with _tlogger.timed("pre_edit_analysis"):
-            pre_analysis = change_processor.pre_edit_analysis(
-                pstate,
-                path2module,
-                changed,
+        # 【guohx】现在向后遍历时间以执行预编辑分析
+        checkout_commit(commit_now.hash)  # 【guohx】切换回当前提交
+        # 【guohx】执行预编辑分析
+        with _tlogger.timed("pre_edit_analysis"):  # 【guohx】记录预编辑分析时间
+            pre_analysis = change_processor.pre_edit_analysis(  # 【guohx】调用处理器的预编辑分析
+                pstate,  # 【guohx】项目状态
+                path2module,  # 【guohx】当前模块映射
+                changed,  # 【guohx】变更信息
             )
+        # 【guohx】检查是否超时
         if has_timeouted(step):
             return results
+        # 【guohx】切换回下一个提交，准备处理
         checkout_commit(commit_next.hash)
 
-        with _tlogger.timed("process_change"):
-            processed = change_processor.process_change(
+        # 【guohx】执行变更处理，生成问题对象
+        with _tlogger.timed("process_change"):  # 【guohx】记录变更处理时间
+            processed = change_processor.process_change(  # 【guohx】调用处理器的变更处理
                 pchange, pre_analysis, post_analysis
             )
             results.extend(processed)
@@ -778,7 +820,7 @@ def get_changed_spans(
         parent_changes = (*parent_changes, scope_change)
         match scope_change:
             case Modified(old_scope, new_scope):
-                # compute statement differences
+                # 计算语句差异
                 yield from get_modified_spans(old_scope, new_scope, parent_changes)
                 for sub_change in get_named_changes(
                     old_scope.subscopes, new_scope.subscopes

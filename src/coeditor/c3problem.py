@@ -371,86 +371,126 @@ class C3ProblemGenerator(ProjectChangeProcessor[C3Problem]):
     def use_unchanged(self) -> bool:
         return self.neg_to_pos_ratio > 0
 
+    # 【guohx】预编辑分析函数，在代码变更发生前进行分析，为后续的问题生成做准备
     def pre_edit_analysis(
         self,
-        pstate: ProjectState,
-        modules: Mapping[RelPath, JModule],
-        changes: Mapping[ModuleName, JModuleChange],
-    ) -> _C3PreAnalysis:
-        # first, sample the set of unmodified spans
-        selected_set = set[tuple[ModuleName, LineRange]]()
-        negative_set = set[tuple[ModuleName, LineRange]]()
+        pstate: ProjectState,  # 【guohx】项目状态对象，包含Jedi项目和脚本信息
+        modules: Mapping[RelPath, JModule],  # 【guohx】模块映射，键为相对路径，值为JModule对象
+        changes: Mapping[ModuleName, JModuleChange],  # 【guohx】模块变更映射，键为模块名，值为模块变更对象
+    ) -> _C3PreAnalysis:  # 【guohx】返回预分析结果，包含训练样本和用法分析
+        # 【guohx】首先，采样未修改的代码片段作为负样本
+        selected_set = set[tuple[ModuleName, LineRange]]()  # 【guohx】选中的训练样本集合（模块名，行范围）
+        negative_set = set[tuple[ModuleName, LineRange]]()  # 【guohx】负样本集合（模块名，行范围）
+        # 【guohx】遍历所有模块变更
         for mname, mchange in changes.items():
+            # 【guohx】遍历每个变更中的代码片段
             for cspan in mchange.changed:
+                # 【guohx】检查是否应该为这个代码片段生成问题
                 if not self.should_mk_problem(
-                    cspan,
-                    func_only=not self.is_training,
-                    max_chars=self.max_span_chars,
-                    max_lines=self.max_span_lines,
+                    cspan,  # 【guohx】代码片段
+                    func_only=not self.is_training,  # 【guohx】是否只处理函数（非训练模式下）
+                    max_chars=self.max_span_chars,  # 【guohx】最大字符数限制
+                    max_lines=self.max_span_lines,  # 【guohx】最大行数限制
                 ):
-                    continue
+                    continue  # 【guohx】如果不满足条件，跳过
+                # 【guohx】如果是修改类型的变更
                 if isinstance(cspan.change, Modified):
-                    if cspan.change.unchanged:
-                        negative_set.add((mname, cspan.line_range))
-                    else:
-                        selected_set.add((mname, cspan.line_range))
+                    if cspan.change.unchanged:  # 【guohx】如果包含未修改的部分
+                        negative_set.add((mname, cspan.line_range))  # 【guohx】添加到负样本集合
+                    else:  # 【guohx】如果包含修改的部分
+                        selected_set.add((mname, cspan.line_range))  # 【guohx】添加到正样本集合
 
-        # include some negagive samples as training data
-        if negative_set:
+        # 【guohx】包含一些负样本作为训练数据，用于平衡正负样本比例
+        if negative_set:  # 【guohx】如果存在负样本
+            # 【guohx】计算选择概率：正样本数量 * 负样本比例 / 负样本总数
             select_prob = len(selected_set) * self.neg_to_pos_ratio / len(negative_set)
+            # 【guohx】随机选择负样本
             for x in negative_set:
-                if random.random() < select_prob:
-                    selected_set.add(x)
+                if random.random() < select_prob:  # 【guohx】根据概率决定是否选择
+                    selected_set.add(x)  # 【guohx】添加到训练样本集合
 
-        usages = dict[ModuleName, LineUsageAnalysis]()
-        src_map = {m.mname: f for f, m in modules.items()}
+        # 【guohx】初始化用法分析字典
+        usages = dict[ModuleName, LineUsageAnalysis]()  # 【guohx】模块名到行用法分析的映射
+        # 【guohx】构建模块名到文件路径的映射
+        src_map = {m.mname: f for f, m in modules.items()}  # 【guohx】模块名 -> 相对路径
+        # 【guohx】遍历每个模块变更
         for mname, mchange in changes.items():
-            usages[mname] = LineUsageAnalysis({})
+            # 【guohx】初始化该模块的用法分析
+            usages[mname] = LineUsageAnalysis({})  # 【guohx】空的行用法分析
+            # 【guohx】初始化需要分析的行号集合
             lines_to_analyze = set[int]()
 
+            # 【guohx】遍历该模块中的所有变更片段
             for span in mchange.changed:
+                # 【guohx】如果这个片段不在选中的训练样本中，跳过分析
                 if (mname, span.line_range) not in selected_set:
-                    continue  # skip analysis
-                lines_to_analyze.update(span.line_range.to_range())
-                lines_to_analyze.update(span.header_line_range.to_range())
+                    continue  # 【guohx】跳过分析
+                # 【guohx】添加代码片段的行范围到分析集合
+                lines_to_analyze.update(span.line_range.to_range())  # 【guohx】添加主要行范围
+                # 【guohx】添加头部行范围到分析集合
+                lines_to_analyze.update(span.header_line_range.to_range())  # 【guohx】添加头部行范围
+            # 【guohx】如果没有需要分析的行，跳过
             if not lines_to_analyze:
                 continue
 
-            mod_path = src_map[mname]
-            script = pstate.scripts[mod_path]
-            line_usages = self.analyzer.get_line_usages(
-                script, lines_to_analyze, silent=True
+            # 【guohx】获取模块对应的文件路径
+            mod_path = src_map[mname]  # 【guohx】从映射中获取相对路径
+            # 【guohx】获取对应的Jedi脚本对象
+            script = pstate.scripts[mod_path]  # 【guohx】从项目状态中获取脚本
+            # 【guohx】使用分析器获取行用法分析
+            line_usages = self.analyzer.get_line_usages(  # 【guohx】调用Jedi用法分析器
+                script,  # 【guohx】Jedi脚本对象
+                lines_to_analyze,  # 【guohx】需要分析的行号集合
+                silent=True  # 【guohx】静默模式
             )
-            usages[mname] = line_usages
+            # 【guohx】将分析结果存储到用法字典中
+            usages[mname] = line_usages  # 【guohx】保存该模块的用法分析结果
+        # 【guohx】返回预分析结果对象
         return _C3PreAnalysis(
-            training_samples=selected_set,
-            usage_analysis=usages,
+            training_samples=selected_set,  # 【guohx】训练样本集合
+            usage_analysis=usages,  # 【guohx】用法分析结果
         )
 
+    # 【guohx】后编辑分析函数，在代码变更发生后进行分析，主要用于确定模块的拓扑排序
     def post_edit_analysis(
         self,
-        pstate: ProjectState,
-        modules: Mapping[RelPath, JModule],
-        changes: Mapping[ModuleName, JModuleChange],
-    ) -> list[ModuleName]:
+        pstate: ProjectState,  # 【guohx】项目状态对象，包含Jedi项目和脚本信息
+        modules: Mapping[RelPath, JModule],  # 【guohx】模块映射，键为相对路径，值为JModule对象
+        changes: Mapping[ModuleName, JModuleChange],  # 【guohx】模块变更映射，键为模块名，值为模块变更对象
+    ) -> list[ModuleName]:  # 【guohx】返回模块的拓扑排序列表
         "Return the topological order among the modules."
-        # sort modules topologically
-        module_deps = dict[ModuleName, set[ModuleName]]()
+        # 【guohx】对模块进行拓扑排序
+        # 【guohx】初始化模块依赖字典，键为模块名，值为依赖的模块集合
+        module_deps = dict[ModuleName, set[ModuleName]]()  # 【guohx】模块依赖关系映射
+        # 【guohx】遍历所有模块
         for rel_path, module in modules.items():
-            names = {n for n in module.imported_names}
-            script = pstate.scripts[rel_path]
-            deps = module_deps.setdefault(module.mname, set())
+            # 【guohx】获取该模块导入的所有名称
+            names = {n for n in module.imported_names}  # 【guohx】该模块导入的名称集合
+            # 【guohx】获取对应的Jedi脚本对象
+            script = pstate.scripts[rel_path]  # 【guohx】从项目状态中获取脚本
+            # 【guohx】获取或创建该模块的依赖集合
+            deps = module_deps.setdefault(module.mname, set())  # 【guohx】该模块的依赖模块集合
+            # 【guohx】遍历每个导入的名称
             for n in names:
                 try:
-                    srcs = _fast_goto(
-                        script, n, follow_imports=True, follow_builtin_imports=False
+                    # 【guohx】使用Jedi快速查找该名称的定义来源
+                    srcs = _fast_goto(  # 【guohx】快速查找定义
+                        script,  # 【guohx】Jedi脚本对象
+                        n,  # 【guohx】要查找的名称
+                        follow_imports=True,  # 【guohx】跟随导入
+                        follow_builtin_imports=False  # 【guohx】不跟随内置模块导入
                     )
                 except Exception as e:
-                    self.analyzer.add_error(str(e))
-                    continue
+                    # 【guohx】如果查找过程中出现异常，记录错误并继续
+                    self.analyzer.add_error(str(e))  # 【guohx】将错误添加到分析器
+                    continue  # 【guohx】跳过这个名称
+                # 【guohx】遍历所有找到的定义来源
                 for source in srcs:
-                    deps.add(source.module_name)
-        module_order = sort_modules_by_imports(module_deps)
+                    # 【guohx】将来源模块添加到依赖集合中
+                    deps.add(source.module_name)  # 【guohx】添加依赖的模块名
+        # 【guohx】根据依赖关系对模块进行拓扑排序
+        module_order = sort_modules_by_imports(module_deps)  # 【guohx】调用拓扑排序函数
+        # 【guohx】返回排序后的模块列表
         return module_order
 
     def process_change(

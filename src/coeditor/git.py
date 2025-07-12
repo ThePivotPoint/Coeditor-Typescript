@@ -21,10 +21,9 @@ def get_commit_history(
     max_history: int | None = None,
     commit_id: str = "HEAD",
 ) -> list[CommitInfo]:
-    """Get the commit history of the project, start from the given `commit_id`,
-    going backward in time.
-    When a merge commit is encountered, the second parent (the branch that's
-    being merged in) is used as the history.
+    """【guohx】获取项目提交历史，从给定的 `commit_id` 开始，
+    向后追溯时间。
+    当遇到合并提交时，使用第二个父提交（正在合并的分支）作为历史。
     """
     commit_id = run_command(
         ["git", "rev-parse", commit_id],
