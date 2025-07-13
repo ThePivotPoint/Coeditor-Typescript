@@ -50,7 +50,7 @@ class TsModule:
     @property
     def as_scope(self) -> "TsChangeScope":
         from .scoped_changes import TsChangeScope
-        return TsChangeScope.from_tree(TsProjectPath(self.mname, ""), self.tree)
+        return TsChangeScope.from_tree(TsProjectPath(str(self.mname)), self.tree.root_node)
 
     @property
     def imported_names(self) -> set[str]:

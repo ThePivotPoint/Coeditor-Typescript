@@ -75,7 +75,3 @@ class TsC3ProblemTokenizer:
             "output": [],
             "references": []
         } 
-    
-    def compute_stats(self, problems: Sequence[TsC3Problem]):
-        # TODO: 实现 TypeScript 问题统计
-        return {}
