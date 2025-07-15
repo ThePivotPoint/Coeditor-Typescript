@@ -337,3 +337,164 @@ def code_to_ts_module(code: str) -> tree_sitter.Tree:
     parser = tree_sitter.Parser()
     parser.language = tree_sitter.Language(tree_sitter_typescript.language_typescript())
     return parser.parse(code.encode('utf-8')) 
+
+def _edits_from_ts_commit_history(
+    project: Path,  # 项目工作目录路径（临时目录）
+    history: Sequence[CommitInfo],  # 提交历史列表，按时间顺序排列
+    change_processor,  # 变更处理器，负责生成问题对象
+    ignore_dirs,  # 要忽略的目录集合
+    silent: bool,  # 是否静默模式，控制进度条显示
+    time_limit: float | None,  # 处理时间限制（秒），None表示无限制
+) -> Sequence:
+    """
+    增量式地从 TypeScript 仓库的 git 历史中提取作用域变更（scope_change）问题对象。
+    """
+    import subprocess
+    import copy
+    import warnings
+    import time
+    from coeditor_ts.common import get_typescript_files
+    from coeditor_ts.scoped_changes import parse_typescript_module_script, TsModuleChange
+    from coeditor.change import Added, Deleted, Modified
+
+    start_time = time.time()
+    results = []
+
+    def has_timeouted(step):
+        if time_limit is not None and (time.time() - start_time > time_limit):
+            warnings.warn(
+                f"_edits_from_ts_commit_history timed out for {project}. ({time_limit=}) "
+                f"Partial results ({step}/{len(history)-1}) will be returned."
+            )
+            return True
+        return False
+
+    def get_modules(proj_dir):
+        modules = {}
+        for f in get_typescript_files(proj_dir):
+            abs_path = proj_dir / f
+            if abs_path.exists():
+                mod, _ = parse_typescript_module_script(proj_dir, abs_path)
+                modules[f] = mod
+        return modules
+
+    def checkout_commit(commit_hash):
+        subprocess.run(
+            ["git", "checkout", "-f", commit_hash],
+            cwd=project,
+            capture_output=True,
+            check=True,
+        )
+
+    # 确保工作目录只包含.git目录，避免意外覆盖真实代码
+    if list(project.iterdir()) != [project / ".git"]:
+        raise FileExistsError(f"Directory '{project}' should contain only '.git'.")
+
+    # 切换到历史中的第一个提交（最新的提交）
+    commit_now = history[-1]
+    checkout_commit(commit_now.hash)
+    path2module = get_modules(project)
+
+    # 获取未来要处理的提交列表（时间倒序，从旧到新）
+    future_commits = list(reversed(history[:-1]))
+    for step, commit_next in enumerate(future_commits):
+        if has_timeouted(step):
+            return results
+        # 获取当前提交和下一个提交之间的文件变更
+        changed_files = subprocess.run(
+            [
+                "git", "diff", "--no-renames", "--name-status",
+                commit_now.hash, commit_next.hash
+            ],
+            cwd=project,
+            capture_output=True, text=True
+        ).stdout.splitlines()
+
+        path_changes = set()
+        for line in changed_files:
+            segs = line.split("\t")
+            if len(segs) == 2:
+                tag, path = segs
+                if not (path.endswith(".ts") or path.endswith(".tsx")):
+                    continue
+                if tag.endswith("A"):
+                    path_changes.add(Added(path))
+                elif tag.endswith("D"):
+                    path_changes.add(Deleted(path))
+                if tag.endswith("M"):
+                    path_changes.add(Modified(path, path))
+            elif len(segs) == 3:
+                tag, path1, path2 = segs
+                assert tag.startswith("R")
+                if path1.endswith(".ts") or path1.endswith(".tsx"):
+                    path_changes.add(Deleted(path1))
+                if path2.endswith(".ts") or path2.endswith(".tsx"):
+                    path_changes.add(Added(path2))
+
+        # 深拷贝将要更改的模块，保存修改前的状态
+        to_copy = {c.before for c in path_changes if hasattr(c, 'before')}
+        for k in to_copy:
+            if k in path2module:
+                path2module[k] = copy.deepcopy(path2module[k])
+
+        # 切换到下一个提交
+        checkout_commit(commit_next.hash)
+        new_path2module = get_modules(project)
+
+        # 生成模块变更
+        changed = {}
+        for path_change in path_changes:
+            path_str = getattr(path_change, 'earlier', None)
+            if path_str is None:
+                path_str = getattr(path_change, 'after', None)
+            if path_str is None:
+                continue
+            path = project / path_str
+            rel_path = path.relative_to(project)
+            if isinstance(path_change, Added):
+                if rel_path.exists():
+                    mod, _ = parse_typescript_module_script(project, rel_path)
+                    new_path2module[rel_path] = mod
+                    changed[mod.mname] = TsModuleChange.from_modules(Added(mod))
+            elif isinstance(path_change, Deleted):
+                if rel_path in new_path2module:
+                    mod = new_path2module.pop(rel_path)
+                    changed[mod.mname] = TsModuleChange.from_modules(Deleted(mod))
+            elif isinstance(path_change, Modified):
+                if rel_path in new_path2module:
+                    mod_new, _ = parse_typescript_module_script(project, rel_path)
+                    mod_old = path2module[rel_path]
+                    new_path2module[rel_path] = mod_new
+                    changed[mod_new.mname] = TsModuleChange.from_modules(Modified(mod_old, mod_new))
+
+        # --- 集成 post_edit_analysis ---
+        post_analysis = None
+        if hasattr(change_processor, 'post_edit_analysis'):
+            post_analysis = change_processor.post_edit_analysis(
+                new_path2module, changed
+            )
+        else:
+            post_analysis = {}
+
+        # 切回当前 commit，做 pre_edit_analysis
+        checkout_commit(commit_now.hash)
+        pre_analysis = None
+        if hasattr(change_processor, 'pre_edit_analysis'):
+            pre_analysis = change_processor.pre_edit_analysis(
+                path2module, changed
+            )
+        else:
+            pre_analysis = {}
+        # 切回下一个 commit，准备 process_change
+        checkout_commit(commit_next.hash)
+
+        processed = change_processor.process_change(
+            changed,
+            pre_analysis,
+            post_analysis,
+        )
+        results.extend(processed)
+        commit_now = commit_next
+        path2module = new_path2module
+
+    return results 

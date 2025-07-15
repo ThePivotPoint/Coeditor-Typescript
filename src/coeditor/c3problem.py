@@ -1046,58 +1046,77 @@ class C3ProblemTokenizer:
         self,
         problem: C3Problem,
     ) -> TkC3Problem:
+        # 【guohx】如果设置为只使用当前代码，则将问题转换为当前代码版本
         if self.current_code_only:
             problem = _problem_to_current(problem)
         span = problem.span
+        # 【guohx】获取原始的Token序列
         original: TokenSeq = span.original.tolist()
         tk_delta: TkDelta = span.delta
+        # 【guohx】按行分割原始Token
         origin_lines = tk_splitlines(original)
+        # 【guohx】获取需要编辑的行号并排序
         edit_lines = list(sorted(problem.edit_line_ids))
+        # 【guohx】编辑的起始行
         edit_start = edit_lines[0]
+        # 【guohx】编码作用域头部信息
         scope_tks = self._encode_headers(span.headers, 0)
+        # 【guohx】计算主输入的最大Token数
         input_limit = self.max_query_tks - len(scope_tks)
 
-        chunk_input = TokenSeq()
-        chunk_output = TokenSeq()
-        last_line = edit_start
+        chunk_input = TokenSeq()  # 【guohx】主输入Token序列
+        chunk_output = TokenSeq()  # 【guohx】期望输出Token序列
+        last_line = edit_start  # 【guohx】上一次处理的行号
 
+        # 【guohx】遍历需要编辑的行，最多处理N_Extra_Ids行
         for i, l in enumerate(edit_lines[:N_Extra_Ids]):
+            # 【guohx】将last_line+1到l之间的所有行加入输入
             for line in origin_lines[last_line + 1 : l]:
                 chunk_input.extend(line)
                 chunk_input.append(Newline_id)
 
+            # 【guohx】插入特殊的extra_id标记
             chunk_input.append(get_extra_id(i))
+            # 【guohx】如果l在原始行范围内，将该行内容加入输入
             if l < len(origin_lines):
                 chunk_input.extend(origin_lines[l])
                 chunk_input.append(Newline_id)
                 last_line = l
+            # 【guohx】获取该行的变更内容，加入输出
             line_change = join_list(tk_delta.get_line_change(l), Newline_id)
             chunk_output.append(get_extra_id(i))
             chunk_output.extend(line_change)
+            # 【guohx】如果变更内容不是删除结尾，补一个换行
             if line_change and line_change[-1] != Del_id:
                 chunk_output.append(Newline_id)
+            # 【guohx】如果输入超出限制，提前终止
             if len(chunk_input) > input_limit:
                 break
+        # 【guohx】计算编辑的终止行
         edit_stop = last_line + 1
 
-        # limit the input size if it's too long
+        # 【guohx】限制输入Token数量
         chunk_input = truncate_section(
             chunk_input, TruncateAt.Right, input_limit, inplace=True
         )
+        # 【guohx】限制输出Token数量
         chunk_output = truncate_output_tks(chunk_input, chunk_output)
 
-        # try move some prev_change_tks into the input
+        # 【guohx】处理编辑区上方的上下文
         above_tks = join_list(origin_lines[:edit_start] + [TokenSeq()], Newline_id)
         above_delta = tk_delta.for_input_range((0, edit_start))
         if self.current_code_only:
             above_tks = above_delta.apply_to_input(above_tks)
         else:
             above_tks = above_delta.apply_to_change(above_tks)
+        # 【guohx】处理编辑区下方的上下文
         below_tks = join_list(origin_lines[edit_stop:] + [TokenSeq()], Newline_id)
+        # 【guohx】尝试将部分上下文内联到输入中
         chunk_input, above_tks, below_tks = self._inline_some_context(
             chunk_input, above_tks, below_tks, input_limit
         )
 
+        # 【guohx】再次限制输出Token数量
         chunk_output = truncate_section(
             chunk_output,
             TruncateAt.Right,
@@ -1106,6 +1125,7 @@ class C3ProblemTokenizer:
             inplace=True,
         )
 
+        # 【guohx】将上方上下文分块
         above_chunks = break_into_chunks(
             above_tks,
             lambda i: self._encode_headers(span.headers, -1 - i),
@@ -1113,6 +1133,7 @@ class C3ProblemTokenizer:
             overlap=self.ref_chunk_overlap,
             right_to_left=True,
         )
+        # 【guohx】将下方上下文分块
         if not below_tks:
             below_chunks = []
         else:
@@ -1122,6 +1143,7 @@ class C3ProblemTokenizer:
                 chunk_size=self.max_ref_tks,
                 overlap=self.ref_chunk_overlap,
             )
+        # 【guohx】包装分块为命名引用
         above_chunks = [
             (f"above chunk {i}", TkArray.new(chunk))
             for i, chunk in enumerate(above_chunks)
@@ -1130,10 +1152,12 @@ class C3ProblemTokenizer:
             (f"below chunk {i}", TkArray.new(chunk))
             for i, chunk in enumerate(below_chunks)
         ]
+        # 【guohx】合并所有引用
         all_refs = above_chunks + below_chunks
         ref_size_sum = sum(len(ref) for _, ref in all_refs)
 
         truncated = False
+        # 【guohx】如果引用总Token数未超限，继续添加未变更引用
         if ref_size_sum < self.max_ref_tks_sum:
             unchanged = problem.relevant_unchanged
             if self.disable_unchanged_refs:
@@ -1148,15 +1172,16 @@ class C3ProblemTokenizer:
         else:
             truncated = True
 
+        # 【guohx】如果引用总Token数仍未超限，继续添加变更引用
         if ref_size_sum < self.max_ref_tks_sum:
             changed = self._group_encode_changed_refs(problem.relevant_changes)
             for i, chunk in enumerate(changed):
                 all_refs.append((f"changed ref {i}", chunk))
-                ref_size_sum += len(changed)
+                ref_size_sum += len(chunk)
         else:
             truncated = True
 
-        # take until we hit the limit
+        # 【guohx】最终只保留未超限的引用
         ref_size_sum = 0
         kept_refs = list[tuple[str, TkArray]]()
         for name, ref in all_refs:
@@ -1166,6 +1191,7 @@ class C3ProblemTokenizer:
             ref_size_sum += len(ref)
             kept_refs.append((name, ref))
 
+        # 【guohx】返回最终的Token化问题对象
         return TkC3Problem(
             TkArray.new(chunk_input),
             TkArray.new(scope_tks),
