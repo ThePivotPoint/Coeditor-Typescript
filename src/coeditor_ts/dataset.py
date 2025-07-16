@@ -96,22 +96,10 @@ def _process_commits(
     # 【guohx】初始化提交列表
     commits = []
     # 【guohx】检查缓存中是否已存在该仓库的处理结果
-    if not cache.contains(key):
+    # todo
+    # if not cache.contains(key):
         # 【guohx】如果缓存中不存在，获取提交历史，保留最老的commits（限制数量）
-        commits = get_commit_history(root)[-max_history_per_repo:]
-        
-        # 【guohx】记录提交信息到日志文件
-        import logging
-        logging.basicConfig(
-            filename=f"commits_log_{root.name}.txt",
-            level=logging.INFO,
-            format='%(asctime)s - %(message)s'
-        )
-        logging.info(f"Processing repository: {root.name}")
-        logging.info(f"Total commits to process: {len(commits)}")
-        for i, commit in enumerate(commits):
-            logging.info(f"Commit {i+1}: {commit.hash} - {commit.msg[:100]}...")
-        logging.info("-" * 80)
+    commits = get_commit_history(root)[-max_history_per_repo:]
     try:
         # 【guohx】不能在这里直接返回，因为子进程可能在返回后被杀死
         # 【guohx】使用缓存机制获取或生成编辑信息
@@ -142,22 +130,6 @@ def _process_commits(
     change_processor.append_stats(stats)
     # 【guohx】将时间日志记录器的统计信息添加到总统计中
     rec_add_dict_to(stats, {"tlogger": scoped_changes._tlogger.times})
-    
-    # 【guohx】记录处理结果到日志文件
-    try:
-        import logging
-        logging.basicConfig(
-            filename=f"commits_log_{root.name}.txt",
-            level=logging.INFO,
-            format='%(asctime)s - %(message)s'
-        )
-        logging.info(f"Processing completed for repository: {root.name}")
-        logging.info(f"Generated edits: {len(edits)}")
-        logging.info(f"Stats: {stats}")
-        logging.info("=" * 80)
-    except Exception as e:
-        print(f"Failed to write completion log: {e}")
-    
     # 【guohx】返回包含编辑列表和统计信息的处理结果对象
     return _ProcessingResult(edits, stats)
 
