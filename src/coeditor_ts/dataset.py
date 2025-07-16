@@ -99,14 +99,28 @@ def _process_commits(
     if not cache.contains(key):
         # 【guohx】如果缓存中不存在，获取提交历史，保留最老的commits（限制数量）
         commits = get_commit_history(root)[-max_history_per_repo:]
+        
+        # 【guohx】记录提交信息到日志文件
+        import logging
+        logging.basicConfig(
+            filename=f"commits_log_{root.name}.txt",
+            level=logging.INFO,
+            format='%(asctime)s - %(message)s'
+        )
+        logging.info(f"Processing repository: {root.name}")
+        logging.info(f"Total commits to process: {len(commits)}")
+        for i, commit in enumerate(commits):
+            logging.info(f"Commit {i+1}: {commit.hash} - {commit.msg[:100]}...")
+        logging.info("-" * 80)
     try:
         # 【guohx】不能在这里直接返回，因为子进程可能在返回后被杀死
         # 【guohx】使用缓存机制获取或生成编辑信息
+        
         edits = cache.cached(
             key,  # 【guohx】缓存键
             lambda: edits_from_ts_commit_history(  # 【guohx】如果缓存不存在，执行这个函数生成编辑
                 root,  # 【guohx】仓库根目录
-                commits,  # 【guohx】要处理的提交列表
+                commits,  # 【guohx】要处理的提交列表（TypeScript版本）
                 tempdir=workdir / "code" / root.name,  # 【guohx】临时目录：workdir/code/仓库名
                 change_processor=change_processor,  # 【guohx】变更处理器
                 silent=True,  # 【guohx】静默模式，不输出详细信息
@@ -128,6 +142,22 @@ def _process_commits(
     change_processor.append_stats(stats)
     # 【guohx】将时间日志记录器的统计信息添加到总统计中
     rec_add_dict_to(stats, {"tlogger": scoped_changes._tlogger.times})
+    
+    # 【guohx】记录处理结果到日志文件
+    try:
+        import logging
+        logging.basicConfig(
+            filename=f"commits_log_{root.name}.txt",
+            level=logging.INFO,
+            format='%(asctime)s - %(message)s'
+        )
+        logging.info(f"Processing completed for repository: {root.name}")
+        logging.info(f"Generated edits: {len(edits)}")
+        logging.info(f"Stats: {stats}")
+        logging.info("=" * 80)
+    except Exception as e:
+        print(f"Failed to write completion log: {e}")
+    
     # 【guohx】返回包含编辑列表和统计信息的处理结果对象
     return _ProcessingResult(edits, stats)
 
@@ -238,7 +268,7 @@ def datasets_from_repo_splits(
     
     # 【guohx】获取工作目录的绝对路径
     abs_path = os.path.join(WORK_DIR,)
-    
+    debug_log_path = Path("datasets_from_repo_splits_debug.log")
     # 【guohx】遍历每个分集，收集该分集下的所有仓库项目
     for split in splits:
         # 【guohx】构建分集的完整路径：WORK_DIR/repos_root/split
@@ -260,7 +290,9 @@ def datasets_from_repo_splits(
         # 【guohx】如果分集下没有找到任何项目，输出警告
         if not ps:
             warnings.warn(f"No projects found in {split} split")
-
+        with open(debug_log_path, "a", encoding="utf-8") as f:
+                for split, ps in projects.items():
+                    f.write(f"[DEBUG] split={split}, projects={[str(p) for p in ps]}\n")
     # 【guohx】调用dataset_from_projects进行批量处理
     # 【guohx】将所有分集的项目路径合并，统一处理，提高效率
     dataset = dataset_from_projects(
@@ -296,9 +328,12 @@ def make_or_load_ts_dataset(
 ) -> C3ProblemDataset[TProb]:  # 【guohx】返回包含train/valid/test分集的数据集
     # 【guohx】生成问题处理器的配置字符串，用于缓存目录命名
     prob_config = repr_modified_args(change_processor)
-    # 【guohx】构建处理后的数据存储目录：datasets_root/dataset_name/processed/配置字符串
+    # 【guohx】使用哈希值作为目录名，避免路径过长或特殊字符问题
+    import hashlib
+    prob_config_hash = hashlib.md5(prob_config.encode()).hexdigest()[:16]
+    # 【guohx】构建处理后的数据存储目录：datasets_root/dataset_name/processed/配置哈希值
     processed_dir = get_dataset_dir(dataset_name) / "processed"
-    cache_dir = processed_dir / prob_config
+    cache_dir = processed_dir / prob_config_hash
     # 【guohx】初始化缓存对象，用于存储/读取处理结果
     cache = PickleCache(cache_dir)
     
@@ -362,10 +397,13 @@ def make_or_load_ts_transformed_dataset(
 
     proc_config = repr_modified_args(encoder.change_processor)
     trans_config = repr_modified_args(encoder.problem_tranform)
+    # 使用哈希值作为缓存键，避免路径过长或特殊字符问题
+    import hashlib
+    cache_key = f"eval-{hashlib.md5(proc_config.encode()).hexdigest()[:8]}-{hashlib.md5(trans_config.encode()).hexdigest()[:8]}"
     transformed_dir = get_dataset_dir(dataset_name) / "transformed"
     cache = PickleCache(transformed_dir)
     return cache.cached(
-        f"eval-{proc_config}-{trans_config}",
+        cache_key,
         lambda: transform_eval_problems(not_none(dataset)),
         remake=remake_problems,
     )

@@ -424,7 +424,7 @@ class NoProcessing(ProjectChangeProcessor[TsProjectChange]):
 
 def _edits_from_ts_commit_history(
     project: Path,  # 项目工作目录路径（临时目录）
-    history: Sequence[CommitInfo],  # 提交历史列表，按时间顺序排列
+    history: Sequence,  # 提交历史列表，按时间顺序排列
     change_processor,  # 变更处理器，负责生成问题对象
     ignore_dirs,  # 要忽略的目录集合
     silent: bool,  # 是否静默模式，控制进度条显示
@@ -554,8 +554,10 @@ def _edits_from_ts_commit_history(
         # --- 集成 post_edit_analysis ---
         post_analysis = None
         if hasattr(change_processor, 'post_edit_analysis'):
+            # 创建 TsProjectState 对象
+            pstate = TsProjectState(project, new_path2module)
             post_analysis = change_processor.post_edit_analysis(
-                new_path2module, changed
+                pstate, new_path2module, changed
             )
         else:
             post_analysis = {}
@@ -564,16 +566,26 @@ def _edits_from_ts_commit_history(
         checkout_commit(commit_now.hash)
         pre_analysis = None
         if hasattr(change_processor, 'pre_edit_analysis'):
+            # 创建 TsProjectState 对象
+            pstate = TsProjectState(project, path2module)
             pre_analysis = change_processor.pre_edit_analysis(
-                path2module, changed
+                pstate, path2module, changed
             )
         else:
             pre_analysis = {}
         # 切回下一个 commit，准备 process_change
         checkout_commit(commit_next.hash)
 
+        # 创建 TsProjectChange 对象
+        project_change = TsProjectChange(
+            project_name=project.name,
+            changed=changed,
+            all_modules=Modified(path2module, new_path2module),
+            commit_info=commit_next
+        )
+
         processed = change_processor.process_change(
-            changed,
+            project_change,
             pre_analysis,
             post_analysis,
         )
@@ -586,7 +598,7 @@ def _edits_from_ts_commit_history(
 
 def edits_from_ts_commit_history(
     project: Path,
-    history: Sequence[CommitInfo],
+    history: Sequence,  # 移除类型注解，避免类型冲突
     tempdir: Path,
     change_processor,
     silent: bool = False,
