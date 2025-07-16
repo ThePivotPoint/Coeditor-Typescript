@@ -1,3 +1,4 @@
+from re import T
 import shutil
 import tempfile
 import traceback
@@ -10,9 +11,9 @@ from .c3problem import (
     TsC3ProblemGenerator,
     C3ProblemSimpleSplit,
     TsC3ProblemTokenizer,
-    C3ProblemTransform,
+    TsC3ProblemTransform,
     JediUsageAnalyzer,
-    fix_jedi_cache,
+    fix_ts_cache,
 )
 from .change import Added
 from .common import *
@@ -62,7 +63,7 @@ class TsC3CombinedEncoder:
     change_processor: ProjectChangeProcessor[TsC3Problem] = field(
         default_factory=TsC3ProblemGenerator
     )
-    problem_tranform: TsC3ProblemTransform = field(default_factory=TsC3ProblemSimpleSplit)
+    problem_tranform: TsC3ProblemTransform = field(default_factory=TsC3ProblemTransform)
     edit_tokenizer: TsC3ProblemTokenizer = field(default_factory=TsC3ProblemTokenizer)
 
 
@@ -78,12 +79,12 @@ def _process_commits(
     workdir: Path,  # 【guohx】工作目录路径，用于存储临时文件
     is_training: bool,  # 【guohx】是否为训练模式，影响问题生成策略
     max_history_per_repo: int,  # 【guohx】每个仓库最多处理的commit数量
-    change_processor: ProjectChangeProcessor[C3Problem],  # 【guohx】变更处理器，负责生成C3Problem对象
+    change_processor: ProjectChangeProcessor[TsC3Problem],  # 【guohx】变更处理器，负责生成C3Problem对象
     cache: PickleCache,  # 【guohx】缓存对象，用于加速重复处理
     time_limit_per_commit: float = 10.0,  # 【guohx】每个commit的处理时间限制（秒），默认10秒
 ) -> _ProcessingResult:  # 【guohx】返回包含编辑列表和统计信息的处理结果
-    # 【guohx】修复Jedi缓存，确保使用进程特定的parso缓存目录
-    fix_jedi_cache(workdir)
+    # 【guohx】修复TypeScript缓存，确保使用进程特定的tree-sitter缓存目录
+    fix_ts_cache(workdir)
     # 【guohx】清空时间日志记录器，准备记录本次处理的时间统计
     scoped_changes._tlogger.clear()
     # 【guohx】清空变更处理器的统计信息，准备收集新的统计

@@ -311,6 +311,18 @@ class TsModuleChange:
     ):
         # TODO: 实现TypeScript版本的模块变更分析
         return TsModuleChange(module_change, [])
+@dataclass(frozen=True)
+class TsProjectChange:
+    project_name: str
+    changed: Mapping[ModuleName, TsModuleChange]
+    all_modules: Modified[Collection[TsModule]]
+    commit_info: "CommitInfo | None"
+
+    def __repr__(self) -> str:
+        commit = (
+            f"commit={repr(self.commit_info.summary())}, " if self.commit_info else ""
+        )
+        return f"TsProjectChange({commit}{self.changed})"
 
 def get_typescript_files(project: Path) -> list[RelPath]:
     """Get all TypeScript files in the project."""
@@ -337,6 +349,78 @@ def code_to_ts_module(code: str) -> tree_sitter.Tree:
     parser = tree_sitter.Parser()
     parser.language = tree_sitter.Language(tree_sitter_typescript.language_typescript())
     return parser.parse(code.encode('utf-8')) 
+
+@dataclass
+class TsProjectState:
+    """TypeScript 项目的全局状态，包含所有已解析的模块"""
+    root: Path
+    modules: Mapping[str, tree_sitter.Tree ]  # key: 相对路径字符串
+
+TProb = TypeVar("TProb", covariant=True)
+TEnc = TypeVar("TEnc", covariant=True)
+
+
+class ProjectChangeProcessor(Generic[TProb], ABC):
+    def pre_edit_analysis(
+        self,
+        pstate: TsProjectState,
+        modules: Mapping[RelPath, TsModule],
+        changes: Mapping[ModuleName, TsModuleChange],
+    ) -> Any:
+        return None
+
+    def post_edit_analysis(
+        self,
+        pstate: TsProjectState,
+        modules: Mapping[RelPath, TsModule],
+        changes: Mapping[ModuleName, TsModuleChange],
+    ) -> Any:
+        return None
+
+    @abstractmethod
+    def process_change(
+        self, pchange: "TsProjectChange", pre_analysis: Any, post_analysis: Any
+    ) -> Sequence[TProb]:
+        ...
+
+    def clear_stats(self):
+        return None
+
+    def append_stats(self, stats: dict[str, Any]) -> None:
+        return None
+
+    def set_training(self, is_training: bool) -> None:
+        self._is_training = is_training
+
+    @property
+    def is_training(self) -> bool:
+        return getattr(self, "_is_training", False)
+
+    def use_unchanged(self) -> bool:
+        return False
+
+    @staticmethod
+    def should_mk_problem(
+        span: TsChangedSpan, func_only: bool, max_chars: int, max_lines: int
+    ):
+        return (
+            (span.change.as_char() == Modified.as_char())
+            and (not func_only or span._is_func_body())
+            and (len(span.change.earlier) <= max_chars)
+            and (len(span.change.later) <= max_chars)
+            and (count_lines(span.change.earlier) <= max_lines)
+            and (count_lines(span.change.later) <= max_lines)
+        )
+
+
+class NoProcessing(ProjectChangeProcessor[TsProjectChange]):
+    def process_change(
+        self,
+        pchange: TsProjectChange,
+        pre_analysis,
+        post_analysis,
+    ) -> Sequence[TsProjectChange]:
+        return [pchange]
 
 def _edits_from_ts_commit_history(
     project: Path,  # 项目工作目录路径（临时目录）
@@ -498,3 +582,44 @@ def _edits_from_ts_commit_history(
         path2module = new_path2module
 
     return results 
+
+
+def edits_from_ts_commit_history(
+    project: Path,
+    history: Sequence[CommitInfo],
+    tempdir: Path,
+    change_processor,
+    silent: bool = False,
+    time_limit: float | None = None,
+) -> Sequence:
+    """
+    从 TypeScript 仓库的 git 历史中提取编辑信息。
+    这是 _edits_from_ts_commit_history 的公共包装函数。
+    """
+    # 创建临时工作目录
+    workdir = tempdir / "ts_edits"
+    workdir.mkdir(parents=True, exist_ok=True)
+    
+    # 复制 .git 目录到工作目录
+    git_dir = workdir / ".git"
+    if not git_dir.exists():
+        import shutil
+        shutil.copytree(project / ".git", git_dir)
+    
+    # 设置忽略目录（暂时为空）
+    ignore_dirs = set()
+    
+    try:
+        return _edits_from_ts_commit_history(
+            workdir,
+            history,
+            change_processor,
+            ignore_dirs,
+            silent,
+            time_limit,
+        )
+    finally:
+        # 清理临时目录
+        if workdir.exists():
+            import shutil
+            shutil.rmtree(workdir) 
